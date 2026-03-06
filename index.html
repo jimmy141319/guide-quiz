@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>導遊考試刷題 V10</title>
+<title>導遊考試刷題 V20</title>
 
 <style>
-
 body{
 font-family:Arial;
 background:#f3f4f6;
@@ -24,24 +22,17 @@ border-radius:16px;
 box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
 
-h1{
-text-align:center;
-}
-
-.mode{
-text-align:center;
-margin-bottom:20px;
-}
+h1{text-align:center;}
 
 .question{
-font-size:24px;
-font-weight:bold;
+font-size:26px;
 margin:20px 0;
+font-weight:bold;
 }
 
 .answers{
 display:grid;
-gap:12px;
+gap:10px;
 }
 
 button{
@@ -53,12 +44,8 @@ background:#e5e7eb;
 cursor:pointer;
 }
 
-button:hover{
-background:#d1d5db;
-}
-
 .correct{
-background:#fde047!important;
+background:#fde047 !important;
 }
 
 .controls{
@@ -72,28 +59,14 @@ flex:1;
 background:#2563eb;
 color:white;
 }
-
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>導遊考試刷題 V10</h1>
-
-<div class="mode">
-
-模式：
-
-<select id="mode">
-<option value="10">隨機10題</option>
-<option value="50">模擬考50題</option>
-<option value="all">全部題目</option>
-</select>
-
-</div>
+<h1>導遊考試刷題 V20</h1>
 
 <div id="progress"></div>
 
@@ -102,123 +75,104 @@ color:white;
 <div class="answers" id="answers"></div>
 
 <div class="controls">
-
 <button onclick="showAnswer()">顯示答案</button>
-
 <button onclick="nextQuestion()">下一題</button>
-
 </div>
-
-<div id="result"></div>
 
 </div>
 
 <script>
 
-const allQuestions=[
+const allQuestions = [];
 
-{q:"台灣最高山為？",options:["玉山","雪山","阿里山","合歡山"],answer:0},
+for(let i=1;i<=500;i++){
+allQuestions.push({
+q:"導遊測驗題目 "+i,
+options:["選項A","選項B","選項C","選項D"],
+answer:0
+});
+}
 
-{q:"日月潭位於哪個縣市？",options:["台中","南投","嘉義","花蓮"],answer:1},
-
-{q:"阿里山位於哪個縣？",options:["嘉義","南投","花蓮","台東"],answer:0},
-
-{q:"太魯閣國家公園位於哪裡？",options:["花蓮","台東","屏東","宜蘭"],answer:0},
-
-{q:"墾丁國家公園位於哪裡？",options:["屏東","高雄","台東","花蓮"],answer:0}
-
-]
-
-let questions=[]
-let current=0
+let questions=[];
+let current=0;
 
 function start(){
 
-const mode=document.getElementById("mode").value
+questions=[...allQuestions].sort(()=>Math.random()-0.5).slice(0,10);
+current=0;
 
-let shuffled=[...allQuestions].sort(()=>Math.random()-0.5)
-
-if(mode=="10")questions=shuffled.slice(0,10)
-
-else if(mode=="50")questions=shuffled.slice(0,50)
-
-else questions=shuffled
-
-current=0
-
-loadQuestion()
+loadQuestion();
 
 }
 
 function loadQuestion(){
 
-const q=questions[current]
+const q=questions[current];
 
 document.getElementById("progress").innerText=
-`第 ${current+1} 題 / 共 ${questions.length} 題`
+"第 "+(current+1)+" 題 / 共 "+questions.length+" 題";
 
-document.getElementById("question").innerText=q.q
+document.getElementById("question").innerText=q.q;
 
-const answersDiv=document.getElementById("answers")
+const answers=document.getElementById("answers");
 
-answersDiv.innerHTML=""
+answers.innerHTML="";
 
 q.options.forEach((opt,i)=>{
 
-const btn=document.createElement("button")
+const btn=document.createElement("button");
 
-btn.innerText=opt
+btn.innerText=opt;
 
-btn.onclick=()=>selectAnswer(i)
+btn.onclick=()=>selectAnswer(i);
 
-answersDiv.appendChild(btn)
+answers.appendChild(btn);
 
-})
+});
 
 }
 
 function selectAnswer(i){
 
-const q=questions[current]
+const q=questions[current];
 
-const buttons=document.querySelectorAll("#answers button")
+const buttons=document.querySelectorAll("#answers button");
 
-buttons[q.answer].classList.add("correct")
+buttons[q.answer].classList.add("correct");
 
 }
 
 function showAnswer(){
 
-const q=questions[current]
+const q=questions[current];
 
-const buttons=document.querySelectorAll("#answers button")
+const buttons=document.querySelectorAll("#answers button");
 
-buttons[q.answer].classList.add("correct")
+buttons[q.answer].classList.add("correct");
 
 }
 
 function nextQuestion(){
 
-current++
+current++;
 
 if(current>=questions.length){
 
-alert("測驗完成")
+alert("測驗完成");
 
-start()
+start();
 
 }else{
 
-loadQuestion()
+loadQuestion();
 
 }
 
 }
 
-start()
+start();
 
 </script>
 
 </body>
-
 </html>
