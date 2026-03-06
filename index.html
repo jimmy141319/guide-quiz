@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>導遊考試神器 V10000</title>
+
+<title>導遊考試神器 V11000</title>
 
 <style>
 
@@ -73,16 +77,22 @@ display:none;
 <body>
 
 <header>
-導遊考試神器 V10000
+導遊考試神器 V11000
 </header>
 
 <div class="container">
 
 <div class="card" id="home">
 
-<h2>必考題刷題</h2>
+<h2>分科刷題</h2>
 
-<button onclick="start()">開始刷題（120題）</button>
+<button onclick="start('resource')">觀光資源 150題</button>
+
+<button onclick="start('practice')">導遊實務 150題</button>
+
+<button onclick="start('law')">導遊法規 150題</button>
+
+<button onclick="exam()">模擬考 50題</button>
 
 </div>
 
@@ -95,7 +105,8 @@ display:none;
 <div id="options"></div>
 
 <button onclick="next()">下一題</button>
-<button onclick="goHome()">回首頁</button>
+
+<button onclick="home()">回首頁</button>
 
 </div>
 
@@ -106,42 +117,95 @@ display:none;
 const base=[
 
 ["台灣最高山是？",["玉山","雪山","阿里山","合歡山"],0],
+
 ["台灣最大天然湖泊？",["日月潭","石門水庫","曾文水庫","澄清湖"],0],
+
 ["太魯閣國家公園在哪？",["花蓮","台東","屏東","新竹"],0],
+
 ["墾丁國家公園在哪？",["台東","屏東","高雄","嘉義"],1],
+
 ["陽明山國家公園在哪？",["台北","桃園","新竹","台中"],0],
+
 ["阿里山在哪？",["嘉義","南投","台中","花蓮"],0],
+
 ["野柳地質公園在哪？",["新北","台北","基隆","宜蘭"],0],
+
 ["士林夜市在哪？",["台北","新北","桃園","基隆"],0],
+
 ["逢甲夜市在哪？",["台中","台南","高雄","嘉義"],0],
+
 ["六合夜市在哪？",["高雄","台南","屏東","台東"],0]
 
 ]
 
 let quiz=[]
+
 let index=0
+
 let score=0
 
-function start(){
+function generate(n){
 
-quiz=[]
+let arr=[]
 
-for(let i=0;i<120;i++){
+for(let i=0;i<n;i++){
 
 let q=base[i%base.length]
 
-quiz.push({
+arr.push({
+
 q:q[0]+"（"+(i+1)+"）",
+
 a:q[1],
+
 c:q[2]
+
 })
 
 }
 
+return arr
+
+}
+
+const resource=generate(150)
+
+const practice=generate(150)
+
+const law=generate(150)
+
+function start(type){
+
+if(type=="resource") quiz=[...resource]
+
+if(type=="practice") quiz=[...practice]
+
+if(type=="law") quiz=[...law]
+
+begin()
+
+}
+
+function exam(){
+
+quiz=[...resource,...practice,...law]
+
+.sort(()=>0.5-Math.random())
+
+.slice(0,50)
+
+begin()
+
+}
+
+function begin(){
+
 document.getElementById("home").classList.add("hidden")
+
 document.getElementById("quiz").classList.remove("hidden")
 
 index=0
+
 score=0
 
 show()
@@ -152,7 +216,7 @@ function show(){
 
 let q=quiz[index]
 
-document.getElementById("top").innerText="第 "+(index+1)+" 題 / 120"
+document.getElementById("top").innerText="第 "+(index+1)+" 題 / "+quiz.length
 
 document.getElementById("question").innerText=q.q
 
@@ -196,17 +260,18 @@ show()
 
 }else{
 
-alert("完成 成績 "+score+" / 120")
+alert("完成 成績 "+score+" / "+quiz.length)
 
-goHome()
-
-}
+home()
 
 }
 
-function goHome(){
+}
+
+function home(){
 
 document.getElementById("quiz").classList.add("hidden")
+
 document.getElementById("home").classList.remove("hidden")
 
 }
@@ -214,4 +279,5 @@ document.getElementById("home").classList.remove("hidden")
 </script>
 
 </body>
+
 </html>
