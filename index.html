@@ -1,83 +1,363 @@
-<script>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>導遊考試刷題</title>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f3f4f6;
+      margin:0;
+      padding:20px;
+    }
+    .container{
+      max-width:760px;
+      margin:30px auto;
+      background:#fff;
+      border-radius:18px;
+      padding:24px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.08);
+    }
+    h1{
+      text-align:center;
+      margin-bottom:8px;
+      font-size:34px;
+    }
+    .subtitle{
+      text-align:center;
+      color:#666;
+      margin-bottom:20px;
+    }
+    .toolbar{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:10px;
+      margin-bottom:20px;
+      flex-wrap:wrap;
+    }
+    select{
+      padding:10px 14px;
+      border-radius:10px;
+      border:1px solid #ccc;
+      font-size:16px;
+    }
+    .status{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+      color:#555;
+      font-size:18px;
+    }
+    .question-number{
+      color:#666;
+      margin-bottom:8px;
+    }
+    .question{
+      font-size:30px;
+      font-weight:bold;
+      line-height:1.5;
+      margin-bottom:20px;
+    }
+    .answers{
+      display:grid;
+      gap:12px;
+    }
+    .answer-btn{
+      width:100%;
+      padding:16px;
+      font-size:24px;
+      border:none;
+      border-radius:12px;
+      background:#e5e7eb;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .answer-btn:hover{
+      background:#d1d5db;
+    }
+    .correct{
+      background:#fde047 !important;
+      color:#111 !important;
+    }
+    .wrong{
+      background:#fca5a5 !important;
+      color:#111 !important;
+    }
+    .result{
+      margin-top:18px;
+      text-align:center;
+      font-size:24px;
+      font-weight:bold;
+      min-height:34px;
+    }
+    .note{
+      text-align:center;
+      color:#444;
+      font-size:18px;
+      min-height:28px;
+      margin-top:6px;
+      line-height:1.6;
+    }
+    .controls{
+      margin-top:20px;
+      text-align:center;
+    }
+    .btn{
+      padding:12px 20px;
+      font-size:18px;
+      border:none;
+      border-radius:12px;
+      background:#2563eb;
+      color:white;
+      cursor:pointer;
+      margin:6px;
+    }
+    .btn:hover{
+      background:#1d4ed8;
+    }
+    .hidden{
+      display:none;
+    }
+    .finish{
+      text-align:center;
+      padding:20px 0;
+    }
+    .finish h2{
+      font-size:32px;
+      margin-bottom:12px;
+    }
+    .score{
+      font-size:28px;
+      font-weight:bold;
+      margin-bottom:8px;
+    }
+    .rate{
+      font-size:22px;
+      color:#555;
+      margin-bottom:16px;
+    }
+    @media (max-width: 600px){
+      h1{font-size:28px;}
+      .question{font-size:24px;}
+      .answer-btn{font-size:20px;}
+      .result{font-size:20px;}
+      .note{font-size:16px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>導遊考試刷題 V3</h1>
+    <div class="subtitle">隨機出題・即時判斷・邊看邊記</div>
 
-const allQuestions = [
-{q:"台灣最高山為？",options:["玉山","雪山","阿里山","合歡山"],answer:0},
-...
-]
+    <div class="toolbar">
+      <label for="mode">模式：</label>
+      <select id="mode" onchange="restartQuiz()">
+        <option value="10">隨機10題</option>
+        <option value="all">全部題目</option>
+      </select>
+    </div>
 
+    <div id="quiz-area">
+      <div class="status">
+        <div id="progress-text">第 1 題 / 共 10 題</div>
+        <div id="score-text">目前答對：0 題</div>
+      </div>
 
+      <div class="question-number" id="question-number"></div>
+      <div class="question" id="question"></div>
 
-{q:"台灣最高山為？",options:["玉山","雪山","阿里山","合歡山"],answer:0},
-{q:"日月潭位於哪個縣市？",options:["台中","南投","嘉義","花蓮"],answer:1},
-{q:"阿里山位於哪個縣？",options:["嘉義","南投","花蓮","台東"],answer:0},
-{q:"太魯閣國家公園位於哪裡？",options:["花蓮","台東","屏東","宜蘭"],answer:0},
-{q:"墾丁國家公園位於哪裡？",options:["屏東","高雄","台東","花蓮"],answer:0},
+      <div class="answers">
+        <button class="answer-btn" id="btn0" onclick="selectAnswer(0)"></button>
+        <button class="answer-btn" id="btn1" onclick="selectAnswer(1)"></button>
+        <button class="answer-btn" id="btn2" onclick="selectAnswer(2)"></button>
+        <button class="answer-btn" id="btn3" onclick="selectAnswer(3)"></button>
+      </div>
 
-{q:"台灣最長河流為？",options:["濁水溪","淡水河","高屏溪","大甲溪"],answer:0},
-{q:"故宮博物院位於哪裡？",options:["台北","台中","台南","高雄"],answer:0},
-{q:"陽明山國家公園位於哪裡？",options:["台北","台中","花蓮","台東"],answer:0},
-{q:"台江國家公園位於哪裡？",options:["台南","高雄","屏東","嘉義"],answer:0},
-{q:"金門國家公園位於哪裡？",options:["金門","澎湖","馬祖","宜蘭"],answer:0},
+      <div class="result" id="result"></div>
+      <div class="note" id="note"></div>
 
-{q:"澎湖群島位於哪個海域？",options:["台灣海峽","太平洋","南海","東海"],answer:0},
-{q:"台灣最高建築物為？",options:["台北101","85大樓","新光大樓","遠雄塔"],answer:0},
-{q:"台灣第一座國家公園為？",options:["墾丁","陽明山","玉山","雪霸"],answer:0},
-{q:"雪霸國家公園主要保護什麼？",options:["高山生態","海洋","濕地","沙漠"],answer:0},
-{q:"玉山國家公園主要特色為？",options:["高山","湖泊","沙丘","火山"],answer:0},
+      <div class="controls">
+        <button class="btn" onclick="showAnswer()">顯示答案</button>
+        <button class="btn hidden" id="nextBtn" onclick="nextQuestion()">下一題</button>
+      </div>
+    </div>
 
-{q:"導遊最重要責任為？",options:["旅客安全","購物","拍照","娛樂"],answer:0},
-{q:"導遊帶團旅客生病應先？",options:["協助就醫","回飯店","不理會","取消行程"],answer:0},
-{q:"導遊解說重點為？",options:["清楚生動","快速","很少","隨便"],answer:0},
-{q:"導遊服務對象主要為？",options:["旅客","學生","商人","老師"],answer:0},
-{q:"導遊帶團時應保持？",options:["專業態度","隨意","嚴厲","冷淡"],answer:0},
+    <div id="finish-area" class="hidden">
+      <div class="finish">
+        <h2>測驗完成</h2>
+        <div class="score" id="final-score"></div>
+        <div class="rate" id="final-rate"></div>
+        <button class="btn" onclick="restartQuiz()">重新開始</button>
+      </div>
+    </div>
+  </div>
 
-{q:"九份位於哪裡？",options:["新北市","台北","基隆","宜蘭"],answer:0},
-{q:"野柳地質公園在哪？",options:["新北市","台北","花蓮","台東"],answer:0},
-{q:"清境農場在哪？",options:["南投","台中","花蓮","台東"],answer:0},
-{q:"太平山在哪？",options:["宜蘭","花蓮","台東","屏東"],answer:0},
-{q:"蘭嶼在哪？",options:["台東","花蓮","屏東","宜蘭"],answer:0},
+  <script>
+    const allQuestions = [
+      { q:"台灣最高山為？", options:["玉山","雪山","阿里山","合歡山"], answer:0 },
+      { q:"日月潭位於哪個縣市？", options:["台中","南投","嘉義","花蓮"], answer:1 },
+      { q:"阿里山位於哪個縣？", options:["嘉義","南投","花蓮","台東"], answer:0 },
+      { q:"太魯閣國家公園位於哪裡？", options:["花蓮","台東","宜蘭","屏東"], answer:0 },
+      { q:"墾丁國家公園位於哪裡？", options:["屏東","高雄","台東","宜蘭"], answer:0 },
+      { q:"台灣最長河流為？", options:["濁水溪","淡水河","高屏溪","大甲溪"], answer:0 },
+      { q:"故宮博物院位於哪裡？", options:["台北","台中","台南","高雄"], answer:0 },
+      { q:"陽明山國家公園位於哪裡？", options:["台北","台中","花蓮","台東"], answer:0 },
+      { q:"台江國家公園位於哪裡？", options:["台南","高雄","屏東","嘉義"], answer:0 },
+      { q:"金門國家公園位於哪裡？", options:["金門","澎湖","馬祖","宜蘭"], answer:0 },
+      { q:"清境農場位於哪裡？", options:["南投","台中","花蓮","宜蘭"], answer:0 },
+      { q:"九份老街位於哪裡？", options:["新北","基隆","台北","宜蘭"], answer:0 },
+      { q:"野柳地質公園位於哪裡？", options:["新北","台北","宜蘭","花蓮"], answer:0 },
+      { q:"十分瀑布位於哪裡？", options:["新北","台北","花蓮","宜蘭"], answer:0 },
+      { q:"清水斷崖位於哪裡？", options:["花蓮","宜蘭","台東","屏東"], answer:0 },
+      { q:"台灣第一座國家公園為？", options:["墾丁國家公園","陽明山國家公園","玉山國家公園","雪霸國家公園"], answer:0 },
+      { q:"台灣最大天然湖泊為？", options:["日月潭","澄清湖","鯉魚潭","曾文水庫"], answer:0 },
+      { q:"澎湖著名地形為？", options:["玄武岩","峽谷","冰河","沙漠"], answer:0 },
+      { q:"蘭嶼主要原住民族為？", options:["達悟族","阿美族","泰雅族","排灣族"], answer:0 },
+      { q:"導遊最重要責任為？", options:["旅客安全","安排購物","幫旅客提行李","代辦護照"], answer:0 }
+    ];
 
-{q:"台灣最大湖泊為？",options:["日月潭","澄清湖","鯉魚潭","曾文水庫"],answer:0},
-{q:"台灣最南端為？",options:["鵝鑾鼻","富貴角","三貂角","野柳"],answer:0},
-{q:"台灣最北端為？",options:["富貴角","鵝鑾鼻","三貂角","野柳"],answer:0},
-{q:"台灣最東端為？",options:["三貂角","富貴角","鵝鑾鼻","野柳"],answer:0},
-{q:"台灣最西端為？",options:["國聖港","富貴角","鵝鑾鼻","三貂角"],answer:0},
+    let questions = [];
+    let current = 0;
+    let score = 0;
+    let answered = false;
+    let answerShown = false;
 
-{q:"阿里山著名景觀為？",options:["日出","沙漠","火山","冰河"],answer:0},
-{q:"澎湖著名地形為？",options:["玄武岩","沙丘","冰河","峽谷"],answer:0},
-{q:"太魯閣峽谷主要岩石？",options:["大理石","花崗岩","砂岩","石灰岩"],answer:0},
-{q:"蘭嶼主要族群？",options:["達悟族","阿美族","排灣族","泰雅族"],answer:0},
-{q:"台灣最大離島？",options:["澎湖","金門","馬祖","蘭嶼"],answer:0},
+    function shuffleArray(arr){
+      const copy = [...arr];
+      for(let i = copy.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
 
-{q:"台北著名夜市？",options:["士林夜市","六合夜市","花園夜市","逢甲夜市"],answer:0},
-{q:"台中著名夜市？",options:["逢甲夜市","士林夜市","六合夜市","羅東夜市"],answer:0},
-{q:"高雄著名夜市？",options:["六合夜市","士林夜市","逢甲夜市","羅東夜市"],answer:0},
-{q:"台南著名夜市？",options:["花園夜市","六合夜市","士林夜市","逢甲夜市"],answer:0},
-{q:"宜蘭著名夜市？",options:["羅東夜市","六合夜市","士林夜市","逢甲夜市"],answer:0},
+    function buildQuestions(){
+      const mode = document.getElementById("mode").value;
+      const shuffled = shuffleArray(allQuestions);
 
-{q:"台灣最高峰？",options:["玉山","雪山","南湖大山","合歡山"],answer:0},
-{q:"台灣第二高山？",options:["雪山","玉山","南湖大山","合歡山"],answer:0},
-{q:"台灣第三高山？",options:["南湖大山","玉山","雪山","合歡山"],answer:0},
-{q:"台灣最高火山？",options:["七星山","大屯山","觀音山","龜山島"],answer:0},
-{q:"龜山島位於？",options:["宜蘭","花蓮","台東","屏東"],answer:0},
+      if(mode === "10"){
+        questions = shuffled.slice(0, 10);
+      } else {
+        questions = shuffled;
+      }
+    }
 
-{q:"高雄85大樓位於？",options:["高雄","台北","台中","台南"],answer:0},
-{q:"台北101位於？",options:["台北","高雄","台中","台南"],answer:0},
-{q:"中正紀念堂在哪？",options:["台北","台中","台南","高雄"],answer:0},
-{q:"總統府在哪？",options:["台北","台中","台南","高雄"],answer:0},
-{q:"故宮博物院在哪？",options:["台北","台中","台南","高雄"],answer:0},
+    function resetButtons(){
+      for(let i = 0; i < 4; i++){
+        const btn = document.getElementById("btn" + i);
+        btn.classList.remove("correct", "wrong");
+        btn.disabled = false;
+      }
+    }
 
-{q:"台灣主要語言？",options:["中文","英文","日文","韓文"],answer:0},
-{q:"台灣貨幣？",options:["新台幣","美元","人民幣","日圓"],answer:0},
-{q:"台灣首都？",options:["台北","台中","台南","高雄"],answer:0},
-{q:"台灣最大城市？",options:["新北市","台北","高雄","台中"],answer:0},
-{q:"台灣人口最多城市？",options:["新北市","台北","高雄","台中"],answer:0},
+    function loadQuestion(){
+      answered = false;
+      answerShown = false;
+      document.getElementById("result").innerText = "";
+      document.getElementById("note").innerText = "";
+      document.getElementById("nextBtn").classList.add("hidden");
 
-{q:"台灣主要產業？",options:["科技","沙漠","石油","煤礦"],answer:0},
-{q:"台灣重要港口？",options:["高雄港","台北港","基隆港","台中港"],answer:0},
-{q:"台灣主要航空公司？",options:["中華航空","長榮航空","虎航","星宇"],answer:0},
-{q:"台灣主要鐵路？",options:["台鐵","JR","Amtrak","Eurostar"],answer:0},
-{q:"台灣高鐵簡稱？",options:["THSR","TGV","JR","HSR"],answer:0}
+      const q = questions[current];
 
-];
-</script>
+      document.getElementById("progress-text").innerText =
+        `第 ${current + 1} 題 / 共 ${questions.length} 題`;
+      document.getElementById("score-text").innerText =
+        `目前答對：${score} 題`;
+      document.getElementById("question-number").innerText =
+        `題目 ${current + 1}`;
+      document.getElementById("question").innerText = q.q;
+
+      for(let i = 0; i < 4; i++){
+        const btn = document.getElementById("btn" + i);
+        btn.innerText = q.options[i];
+      }
+
+      resetButtons();
+    }
+
+    function showAnswer(){
+      if(answered || answerShown) return;
+
+      const q = questions[current];
+      const correctIndex = q.answer;
+
+      document.getElementById("btn" + correctIndex).classList.add("correct");
+      document.getElementById("note").innerText =
+        `正確答案：${q.options[correctIndex]}`;
+
+      answerShown = true;
+      document.getElementById("nextBtn").classList.remove("hidden");
+    }
+
+    function selectAnswer(index){
+      if(answered) return;
+      answered = true;
+
+      const q = questions[current];
+      const correctIndex = q.answer;
+
+      for(let i = 0; i < 4; i++){
+        document.getElementById("btn" + i).disabled = true;
+      }
+
+      if(index === correctIndex){
+        document.getElementById("btn" + index).classList.add("correct");
+        document.getElementById("result").innerText = "✔ 答對了";
+        document.getElementById("note").innerText =
+          `正確答案：${q.options[correctIndex]}`;
+        score++;
+      } else {
+        document.getElementById("btn" + index).classList.add("wrong");
+        document.getElementById("btn" + correctIndex).classList.add("correct");
+        document.getElementById("result").innerText = "✘ 答錯了";
+        document.getElementById("note").innerText =
+          `正確答案：${q.options[correctIndex]}`;
+      }
+
+      document.getElementById("score-text").innerText =
+        `目前答對：${score} 題`;
+
+      document.getElementById("nextBtn").classList.remove("hidden");
+    }
+
+    function nextQuestion(){
+      current++;
+      if(current < questions.length){
+        loadQuestion();
+      } else {
+        showFinal();
+      }
+    }
+
+    function showFinal(){
+      document.getElementById("quiz-area").classList.add("hidden");
+      document.getElementById("finish-area").classList.remove("hidden");
+
+      const rate = Math.round((score / questions.length) * 100);
+
+      document.getElementById("final-score").innerText =
+        `你答對了 ${score} / ${questions.length} 題`;
+      document.getElementById("final-rate").innerText =
+        `正確率：${rate}%`;
+    }
+
+    function restartQuiz(){
+      buildQuestions();
+      current = 0;
+      score = 0;
+      answered = false;
+      answerShown = false;
+      document.getElementById("finish-area").classList.add("hidden");
+      document.getElementById("quiz-area").classList.remove("hidden");
+      loadQuestion();
+    }
+
+    restartQuiz();
+  </script>
+</body>
+</html>
