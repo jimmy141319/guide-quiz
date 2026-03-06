@@ -1,1 +1,180 @@
-<script src="https://cdn.jsdelivr.net/gh/jimmy141319/guide-quiz@main/quiz.js"></script>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>導遊考試刷題</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+    .box {
+      max-width: 760px;
+      margin: 30px auto;
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .q {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 20px 0;
+      min-height: 48px;
+    }
+    .meta {
+      color: #555;
+      margin-bottom: 12px;
+      font-size: 18px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .answers {
+      display: grid;
+      gap: 12px;
+    }
+    button {
+      padding: 16px;
+      font-size: 22px;
+      border: none;
+      border-radius: 12px;
+      background: #e5e7eb;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #d1d5db;
+    }
+    .correct {
+      background: #fde047 !important;
+      color: #111 !important;
+    }
+    .wrong {
+      background: #fca5a5 !important;
+      color: #111 !important;
+    }
+    .controls {
+      margin-top: 18px;
+      text-align: center;
+    }
+    .action {
+      background: #2563eb;
+      color: white;
+      margin: 6px;
+    }
+    .note, .result {
+      text-align: center;
+      margin-top: 12px;
+      min-height: 28px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>導遊考試刷題</h1>
+    <div class="meta">
+      <div id="progress">第 1 題 / 共 10 題</div>
+      <div id="score">答對 0 題</div>
+    </div>
+
+    <div class="q" id="question"></div>
+
+    <div class="answers">
+      <button id="btn0" onclick="selectAnswer(0)"></button>
+      <button id="btn1" onclick="selectAnswer(1)"></button>
+      <button id="btn2" onclick="selectAnswer(2)"></button>
+      <button id="btn3" onclick="selectAnswer(3)"></button>
+    </div>
+
+    <div class="result" id="result"></div>
+    <div class="note" id="note"></div>
+
+    <div class="controls">
+      <button class="action" onclick="showAnswer()">顯示答案</button>
+      <button class="action" onclick="nextQuestion()">下一題</button>
+    </div>
+  </div>
+
+  <script>
+    const allQuestions = [
+      { q:"台灣最高山為？", options:["玉山","雪山","阿里山","合歡山"], answer:0 },
+      { q:"日月潭位於哪個縣市？", options:["台中","南投","嘉義","花蓮"], answer:1 },
+      { q:"阿里山位於哪個縣？", options:["嘉義","南投","花蓮","台東"], answer:0 },
+      { q:"太魯閣國家公園位於哪裡？", options:["花蓮","台東","宜蘭","屏東"], answer:0 },
+      { q:"墾丁國家公園位於哪裡？", options:["屏東","高雄","台東","宜蘭"], answer:0 },
+      { q:"故宮博物院位於哪裡？", options:["台北","台中","台南","高雄"], answer:0 },
+      { q:"野柳地質公園位於哪裡？", options:["新北","台北","宜蘭","基隆"], answer:0 },
+      { q:"清境農場位於哪裡？", options:["南投","台中","花蓮","宜蘭"], answer:0 },
+      { q:"台江國家公園位於哪裡？", options:["台南","高雄","屏東","嘉義"], answer:0 },
+      { q:"導遊最重要責任為？", options:["旅客安全","安排購物","拍照","代辦護照"], answer:0 }
+    ];
+
+    let questions = [...allQuestions];
+    let current = 0;
+    let score = 0;
+    let locked = false;
+
+    function render() {
+      const q = questions[current];
+      document.getElementById("progress").innerText = `第 ${current + 1} 題 / 共 ${questions.length} 題`;
+      document.getElementById("score").innerText = `答對 ${score} 題`;
+      document.getElementById("question").innerText = q.q;
+      document.getElementById("result").innerText = "";
+      document.getElementById("note").innerText = "";
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById("btn" + i);
+        btn.innerText = q.options[i];
+        btn.classList.remove("correct", "wrong");
+        btn.disabled = false;
+      }
+      locked = false;
+    }
+
+    function showAnswer() {
+      if (locked) return;
+      const q = questions[current];
+      document.getElementById("btn" + q.answer).classList.add("correct");
+      document.getElementById("note").innerText = `正確答案：${q.options[q.answer]}`;
+    }
+
+    function selectAnswer(i) {
+      if (locked) return;
+      locked = true;
+      const q = questions[current];
+      for (let j = 0; j < 4; j++) {
+        document.getElementById("btn" + j).disabled = true;
+      }
+      if (i === q.answer) {
+        document.getElementById("btn" + i).classList.add("correct");
+        document.getElementById("result").innerText = "✔ 答對了";
+        score++;
+        document.getElementById("score").innerText = `答對 ${score} 題`;
+      } else {
+        document.getElementById("btn" + i).classList.add("wrong");
+        document.getElementById("btn" + q.answer).classList.add("correct");
+        document.getElementById("result").innerText = "✘ 答錯了";
+      }
+      document.getElementById("note").innerText = `正確答案：${q.options[q.answer]}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current >= questions.length) {
+        alert(`測驗完成\\n答對 ${score} / ${questions.length} 題`);
+        current = 0;
+        score = 0;
+      }
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
