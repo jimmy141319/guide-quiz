@@ -3,176 +3,280 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>導遊考試刷題 V20</title>
-
+<title>導遊考試刷題 V30</title>
 <style>
 body{
-font-family:Arial;
-background:#f3f4f6;
-margin:0;
-padding:20px;
+  font-family:Arial,sans-serif;
+  background:#f3f4f6;
+  margin:0;
+  padding:20px;
 }
-
 .container{
-max-width:720px;
-margin:auto;
-background:white;
-padding:24px;
-border-radius:16px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
+  max-width:860px;
+  margin:30px auto;
+  background:#fff;
+  padding:24px;
+  border-radius:18px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.08);
 }
-
-h1{text-align:center;}
-
+h1{
+  text-align:center;
+  margin-bottom:8px;
+  font-size:34px;
+}
+.subtitle{
+  text-align:center;
+  color:#666;
+  margin-bottom:18px;
+}
+.toolbar{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+select{
+  padding:10px 14px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  font-size:16px;
+}
+.status{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+  color:#555;
+  font-size:18px;
+}
+.question-number{
+  color:#666;
+  margin-bottom:8px;
+}
 .question{
-font-size:26px;
-margin:20px 0;
-font-weight:bold;
+  font-size:30px;
+  font-weight:bold;
+  line-height:1.5;
+  margin-bottom:20px;
 }
-
 .answers{
-display:grid;
-gap:10px;
+  display:grid;
+  gap:12px;
 }
-
-button{
-padding:14px;
-font-size:18px;
-border:none;
-border-radius:10px;
-background:#e5e7eb;
-cursor:pointer;
+.answer-btn{
+  width:100%;
+  padding:16px;
+  font-size:24px;
+  border:none;
+  border-radius:12px;
+  background:#e5e7eb;
+  cursor:pointer;
+  transition:0.2s;
 }
-
+.answer-btn:hover{
+  background:#d1d5db;
+}
 .correct{
-background:#fde047 !important;
+  background:#fde047 !important;
+  color:#111 !important;
 }
-
+.wrong{
+  background:#fca5a5 !important;
+  color:#111 !important;
+}
+.result{
+  margin-top:18px;
+  text-align:center;
+  font-size:24px;
+  font-weight:bold;
+  min-height:34px;
+}
+.note{
+  text-align:center;
+  color:#444;
+  font-size:18px;
+  min-height:28px;
+  margin-top:6px;
+  line-height:1.6;
+}
 .controls{
-margin-top:20px;
-display:flex;
-gap:10px;
+  margin-top:20px;
+  text-align:center;
 }
-
-.controls button{
-flex:1;
-background:#2563eb;
-color:white;
+.btn{
+  padding:12px 20px;
+  font-size:18px;
+  border:none;
+  border-radius:12px;
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+  margin:6px;
+}
+.btn:hover{
+  background:#1d4ed8;
+}
+.hidden{
+  display:none;
+}
+.finish{
+  text-align:center;
+  padding:20px 0;
+}
+.finish h2{
+  font-size:32px;
+  margin-bottom:12px;
+}
+.score{
+  font-size:28px;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+.rate{
+  font-size:22px;
+  color:#555;
+  margin-bottom:16px;
+}
+@media (max-width: 600px){
+  h1{font-size:28px;}
+  .question{font-size:24px;}
+  .answer-btn{font-size:20px;}
+  .result{font-size:20px;}
+  .note{font-size:16px;}
 }
 </style>
 </head>
-
 <body>
-
 <div class="container">
+  <h1>導遊考試刷題 V30</h1>
+  <div class="subtitle">真正題目版・分科練習・模擬考試</div>
 
-<h1>導遊考試刷題 V20</h1>
+  <div class="toolbar">
+    <label for="subject">科目：</label>
+    <select id="subject" onchange="restartQuiz()">
+      <option value="all">全部題庫</option>
+      <option value="resource">觀光資源</option>
+      <option value="practice">導遊實務</option>
+      <option value="law">觀光法規</option>
+    </select>
 
-<div id="progress"></div>
+    <label for="mode">模式：</label>
+    <select id="mode" onchange="restartQuiz()">
+      <option value="10">練習 10 題</option>
+      <option value="50">模擬考 50 題</option>
+      <option value="100">完整考 100 題</option>
+      <option value="all">全部題目</option>
+    </select>
+  </div>
 
-<div class="question" id="question"></div>
+  <div id="quiz-area">
+    <div class="status">
+      <div id="progress-text">第 1 題 / 共 10 題</div>
+      <div id="score-text">目前答對：0 題</div>
+    </div>
 
-<div class="answers" id="answers"></div>
+    <div class="question-number" id="question-number"></div>
+    <div class="question" id="question"></div>
 
-<div class="controls">
-<button onclick="showAnswer()">顯示答案</button>
-<button onclick="nextQuestion()">下一題</button>
-</div>
+    <div class="answers">
+      <button class="answer-btn" id="btn0" onclick="selectAnswer(0)"></button>
+      <button class="answer-btn" id="btn1" onclick="selectAnswer(1)"></button>
+      <button class="answer-btn" id="btn2" onclick="selectAnswer(2)"></button>
+      <button class="answer-btn" id="btn3" onclick="selectAnswer(3)"></button>
+    </div>
 
+    <div class="result" id="result"></div>
+    <div class="note" id="note"></div>
+
+    <div class="controls">
+      <button class="btn" onclick="showAnswer()">顯示答案</button>
+      <button class="btn hidden" id="nextBtn" onclick="nextQuestion()">下一題</button>
+    </div>
+  </div>
+
+  <div id="finish-area" class="hidden">
+    <div class="finish">
+      <h2>測驗完成</h2>
+      <div class="score" id="final-score"></div>
+      <div class="rate" id="final-rate"></div>
+      <button class="btn" onclick="restartQuiz()">重新開始</button>
+    </div>
+  </div>
 </div>
 
 <script>
+const allQuestions = [
+  // 觀光資源
+  {subject:"resource",q:"台灣最高山為？",options:["玉山","雪山","阿里山","合歡山"],answer:0},
+  {subject:"resource",q:"台灣最長河流為？",options:["濁水溪","淡水河","高屏溪","大甲溪"],answer:0},
+  {subject:"resource",q:"台灣最大天然湖泊為？",options:["日月潭","澄清湖","鯉魚潭","曾文水庫"],answer:0},
+  {subject:"resource",q:"太魯閣國家公園位於哪裡？",options:["花蓮","台東","宜蘭","屏東"],answer:0},
+  {subject:"resource",q:"墾丁國家公園位於哪裡？",options:["屏東","高雄","台東","宜蘭"],answer:0},
+  {subject:"resource",q:"陽明山國家公園靠近哪裡？",options:["台北","台中","高雄","台南"],answer:0},
+  {subject:"resource",q:"阿里山位於哪個縣？",options:["嘉義","南投","花蓮","台東"],answer:0},
+  {subject:"resource",q:"日月潭位於哪個縣市？",options:["南投","台中","嘉義","花蓮"],answer:0},
+  {subject:"resource",q:"野柳地質公園位於哪裡？",options:["新北","台北","宜蘭","基隆"],answer:0},
+  {subject:"resource",q:"九份老街位於哪裡？",options:["新北","基隆","台北","宜蘭"],answer:0},
+  {subject:"resource",q:"十分瀑布位於哪裡？",options:["新北","宜蘭","花蓮","台中"],answer:0},
+  {subject:"resource",q:"故宮博物院位於哪裡？",options:["台北","台中","台南","高雄"],answer:0},
+  {subject:"resource",q:"清境農場位於哪裡？",options:["南投","台中","花蓮","宜蘭"],answer:0},
+  {subject:"resource",q:"清水斷崖位於哪裡？",options:["花蓮","宜蘭","台東","屏東"],answer:0},
+  {subject:"resource",q:"台江國家公園位於哪裡？",options:["台南","高雄","屏東","嘉義"],answer:0},
+  {subject:"resource",q:"金門國家公園位於哪裡？",options:["金門","澎湖","馬祖","宜蘭"],answer:0},
+  {subject:"resource",q:"雪霸國家公園主要位於？",options:["苗栗與新竹","台南與高雄","花蓮與台東","宜蘭與基隆"],answer:0},
+  {subject:"resource",q:"玉山國家公園主要特色為？",options:["高山地形","濕地景觀","珊瑚礁","沙丘"],answer:0},
+  {subject:"resource",q:"澎湖著名地形為？",options:["玄武岩","冰河","沙漠","峽谷"],answer:0},
+  {subject:"resource",q:"蘭嶼主要原住民族為？",options:["達悟族","阿美族","排灣族","泰雅族"],answer:0},
+  {subject:"resource",q:"台灣第一座國家公園為？",options:["墾丁國家公園","陽明山國家公園","玉山國家公園","雪霸國家公園"],answer:0},
+  {subject:"resource",q:"台灣最高建築物為？",options:["台北101","85大樓","新光摩天樓","圓山飯店"],answer:0},
+  {subject:"resource",q:"下列何者位於台北？",options:["故宮博物院","高雄85大樓","安平古堡","赤崁樓"],answer:0},
+  {subject:"resource",q:"下列何者位於台北？",options:["中正紀念堂","蓮池潭","安平樹屋","七股鹽山"],answer:0},
+  {subject:"resource",q:"下列何者位於台北？",options:["士林夜市","逢甲夜市","六合夜市","花園夜市"],answer:0},
+  {subject:"resource",q:"下列何者位於新北？",options:["野柳地質公園","阿里山","太魯閣","台江國家公園"],answer:0},
+  {subject:"resource",q:"下列何者位於新北？",options:["九份老街","赤崁樓","日月潭","鵝鑾鼻"],answer:0},
+  {subject:"resource",q:"下列何者位於新北？",options:["十分瀑布","清水斷崖","七星潭","三仙台"],answer:0},
+  {subject:"resource",q:"下列何者位於宜蘭？",options:["龜山島","七股鹽山","關子嶺","旗津"],answer:0},
+  {subject:"resource",q:"下列何者位於宜蘭？",options:["羅東夜市","士林夜市","花園夜市","六合夜市"],answer:0},
+  {subject:"resource",q:"下列何者位於桃園？",options:["石門水庫","日月潭","曾文水庫","鯉魚潭"],answer:0},
+  {subject:"resource",q:"下列何者位於新竹？",options:["內灣老街","九份老街","淡水老街","安平老街"],answer:0},
+  {subject:"resource",q:"下列何者位於台中？",options:["逢甲夜市","士林夜市","六合夜市","羅東夜市"],answer:0},
+  {subject:"resource",q:"下列何者位於台中？",options:["高美濕地","七股鹽田","清水斷崖","太魯閣峽谷"],answer:0},
+  {subject:"resource",q:"下列何者位於南投？",options:["日月潭","澄清湖","東埔溫泉","鯉魚潭"],answer:0},
+  {subject:"resource",q:"下列何者位於南投？",options:["清境農場","野柳地質公園","旗津","安平樹屋"],answer:0},
+  {subject:"resource",q:"下列何者位於嘉義？",options:["阿里山","陽明山","太魯閣","雪霸"],answer:0},
+  {subject:"resource",q:"下列何者位於台南？",options:["安平古堡","九份老街","羅東夜市","東大門夜市"],answer:0},
+  {subject:"resource",q:"下列何者位於台南？",options:["赤崁樓","總統府","中正紀念堂","故宮博物院"],answer:0},
+  {subject:"resource",q:"下列何者位於台南？",options:["台江國家公園","雪霸國家公園","金門國家公園","墾丁國家公園"],answer:0},
+  {subject:"resource",q:"下列何者位於高雄？",options:["蓮池潭","日月潭","清境農場","太平山"],answer:0},
+  {subject:"resource",q:"下列何者位於高雄？",options:["旗津","野柳","鵝鑾鼻","三仙台"],answer:0},
+  {subject:"resource",q:"下列何者位於屏東？",options:["墾丁國家公園","陽明山國家公園","雪霸國家公園","太魯閣國家公園"],answer:0},
+  {subject:"resource",q:"下列何者位於花蓮？",options:["太魯閣國家公園","台江國家公園","墾丁國家公園","陽明山國家公園"],answer:0},
+  {subject:"resource",q:"下列何者位於花蓮？",options:["清水斷崖","日月潭","阿里山","安平古堡"],answer:0},
+  {subject:"resource",q:"下列何者位於台東？",options:["三仙台","野柳","九份","內灣"],answer:0},
+  {subject:"resource",q:"下列何者位於台東？",options:["蘭嶼","金門","澎湖","馬祖"],answer:0},
+  {subject:"resource",q:"下列何者位於澎湖？",options:["玄武岩","大理石峽谷","沙丘地形","火山湖"],answer:0},
+  {subject:"resource",q:"下列何者位於金門？",options:["金門國家公園","雪霸國家公園","台江國家公園","陽明山國家公園"],answer:0},
 
-const allQuestions = [];
-
-for(let i=1;i<=500;i++){
-allQuestions.push({
-q:"導遊測驗題目 "+i,
-options:["選項A","選項B","選項C","選項D"],
-answer:0
-});
-}
-
-let questions=[];
-let current=0;
-
-function start(){
-
-questions=[...allQuestions].sort(()=>Math.random()-0.5).slice(0,10);
-current=0;
-
-loadQuestion();
-
-}
-
-function loadQuestion(){
-
-const q=questions[current];
-
-document.getElementById("progress").innerText=
-"第 "+(current+1)+" 題 / 共 "+questions.length+" 題";
-
-document.getElementById("question").innerText=q.q;
-
-const answers=document.getElementById("answers");
-
-answers.innerHTML="";
-
-q.options.forEach((opt,i)=>{
-
-const btn=document.createElement("button");
-
-btn.innerText=opt;
-
-btn.onclick=()=>selectAnswer(i);
-
-answers.appendChild(btn);
-
-});
-
-}
-
-function selectAnswer(i){
-
-const q=questions[current];
-
-const buttons=document.querySelectorAll("#answers button");
-
-buttons[q.answer].classList.add("correct");
-
-}
-
-function showAnswer(){
-
-const q=questions[current];
-
-const buttons=document.querySelectorAll("#answers button");
-
-buttons[q.answer].classList.add("correct");
-
-}
-
-function nextQuestion(){
-
-current++;
-
-if(current>=questions.length){
-
-alert("測驗完成");
-
-start();
-
-}else{
-
-loadQuestion();
-
-}
-
-}
-
-start();
-
-</script>
-
-</body>
-</html>
+  // 導遊實務
+  {subject:"practice",q:"導遊最重要責任為？",options:["旅客安全","安排購物","幫旅客提行李","代辦護照"],answer:0},
+  {subject:"practice",q:"導遊帶團時旅客生病應先？",options:["協助就醫","要求繼續行程","先拍照記錄","立刻解散"],answer:0},
+  {subject:"practice",q:"導遊解說最重要的是？",options:["清楚生動","越快越好","越短越好","只講外語"],answer:0},
+  {subject:"practice",q:"導遊服務對象主要為？",options:["旅客","司機","飯店員工","地陪"],answer:0},
+  {subject:"practice",q:"導遊帶團時應保持？",options:["專業態度","隨意心情","冷淡態度","只顧自己"],answer:0},
+  {subject:"practice",q:"導遊解說內容應包含？",options:["歷史與文化","私人八卦","未查證傳聞","政治攻訐"],answer:0},
+  {subject:"practice",q:"旅客走失時導遊應先？",options:["立即尋找並聯絡","直接離開現場","關閉手機","取消全團用餐"],answer:0},
+  {subject:"practice",q:"導遊工作核心是？",options:["解說與服務","開車與搬運","收費與銷售","住宿清潔"],answer:0},
+  {subject:"practice",q:"導遊解說前最重要的是？",options:["先確認資訊正確","先安排購物","先關閉手機","先離開團體"],answer:0},
+  {subject:"practice",q:"導遊面對旅客提問時應？",options:["耐心回答","故意忽略","隨意回答","直接生氣"],answer:0},
+  {subject:"practice",q:"導遊進行車上解說時應注意？",options:["音量與內容清楚","只顧自己休息","完全不說話","只談私人話題"],answer:0},
+  {subject:"practice",q:"導遊帶團時最需要維護？",options:["秩序與安全","個人情緒","私人時間","購物金額"],answer:0},
+  {subject:"practice",q:"導遊處理突發事件首要原則？",options:["先保護旅客安全","先拍照上網","先責怪旅客","先離開現場"],answer:0},
+  {subject:"practice",q:"旅客遺失物品時導遊應？",options:["協助尋找與通報","立刻停止服務","要求自行處理","拒絕回應"],answer:0},
+  {subject:"practice",q:"導遊與旅客溝通時應？",options:["態度清楚友善","語氣冷淡","避免回應","只用命令"],answer:0},
+  {subject:"practice",q:"導遊進入景點前應先？",options:["說明集合時間地點","讓旅客自由離開","取消說明","只談購物"],answer:0},
+  {subject:"practice",q:"導遊工作內容不包括？",options:["捏造歷史故事","景點介紹","安全提醒","行程掌控"],answer:0},
+  {subject:"practice",q:"導遊帶團時應避免？",options:["與旅客衝突","安全提醒","時間掌控","景點說明"],answer:0},
+  {subject:"practice",q:"導遊面對抱怨時較佳做法是？",options:["先傾聽再處理","立刻反駁","直接離開","忽略不理"],answer:0},
+  {subje
