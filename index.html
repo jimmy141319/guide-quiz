@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>導遊考試神器 V40000</title>
+<title>導遊考試神器 V50000</title>
 
 <style>
 
@@ -47,13 +49,24 @@ background:#4a90e2;
 color:white;
 }
 
+.correct{
+background:#2ecc71 !important;
+}
+
+.wrong{
+background:#e74c3c !important;
+}
+
 </style>
+
 </head>
 
 <body>
 
 <header>
-導遊考試神器 V40000
+
+導遊考試神器 V50000
+
 </header>
 
 <div class="container">
@@ -63,28 +76,61 @@ color:white;
 <h2>分科刷題</h2>
 
 <button onclick="start(resource)">觀光資源</button>
+
 <button onclick="start(practice)">導遊實務</button>
+
 <button onclick="start(law)">導遊法規</button>
+
+<button onclick="mock()">模擬考 50 題</button>
 
 </div>
 
 <div class="card" id="quiz" style="display:none">
 
 <h3 id="qnum"></h3>
+
 <h2 id="question"></h2>
 
 <div id="answers"></div>
 
 <button onclick="next()">下一題</button>
+
 <button onclick="home()">回首頁</button>
 
 </div>
 
 </div>
 
-<script src="questions.js"></script>
-
 <script>
+
+const resource=[
+["台灣最高峰是？",["玉山","雪山","阿里山","合歡山"],0],
+["台灣最大天然湖泊？",["日月潭","曾文水庫","石門水庫","澄清湖"],0],
+["太魯閣國家公園在哪？",["花蓮","台東","屏東","新竹"],0],
+["阿里山位於哪裡？",["嘉義","南投","台中","花蓮"],0],
+["野柳地質公園在哪？",["新北","台北","基隆","宜蘭"],0],
+["日月潭在哪？",["南投","台中","嘉義","花蓮"],0],
+["清水斷崖在哪？",["花蓮","台東","宜蘭","屏東"],0],
+["陽明山國家公園在哪？",["台北","桃園","新竹","台中"],0],
+["墾丁國家公園在哪？",["屏東","高雄","台東","嘉義"],0],
+["六合夜市在哪？",["高雄","台南","台中","嘉義"],0]
+]
+
+const practice=[
+["導遊最重要責任？",["旅客安全","購物","拍照","聊天"],0],
+["導遊帶團第一件事？",["確認旅客","拍照","購物","休息"],0],
+["旅客生病應？",["送醫","繼續行程","等待","離開"],0],
+["旅客走失應？",["協助尋找","繼續行程","離開","不處理"],0],
+["導遊服務原則？",["安全第一","購物第一","時間自由","隨便"],0]
+]
+
+const law=[
+["導遊主管機關？",["交通部觀光署","教育部","文化部","內政部"],0],
+["導遊需要什麼證？",["導遊證","學生證","工作證","身份證"],0],
+["旅行社主管機關？",["交通部觀光署","警察局","法院","教育部"],0],
+["導遊證照來源？",["國家考試","公司","學校","朋友"],0],
+["旅行社管理機關？",["觀光署","文化部","法院","警察"],0]
+]
 
 let list=[]
 let i=0
@@ -92,12 +138,24 @@ let i=0
 function start(arr){
 
 document.getElementById("menu").style.display="none"
+
 document.getElementById("quiz").style.display="block"
 
 list=arr
+
 i=0
 
 show()
+
+}
+
+function mock(){
+
+list=[...resource,...practice,...law]
+
+list=list.sort(()=>Math.random()-0.5).slice(0,50)
+
+start(list)
 
 }
 
@@ -113,7 +171,7 @@ let html=""
 
 for(let j=0;j<q[1].length;j++){
 
-html+=`<button onclick="answer(${j})">${q[1][j]}</button>`
+html+=`<button onclick="answer(${j},this)">${q[1][j]}</button>`
 
 }
 
@@ -121,17 +179,23 @@ document.getElementById("answers").innerHTML=html
 
 }
 
-function answer(n){
+function answer(n,btn){
 
 let q=list[i]
 
+let buttons=document.querySelectorAll("#answers button")
+
+buttons.forEach(b=>b.disabled=true)
+
 if(n==q[2]){
 
-alert("正確")
+btn.classList.add("correct")
 
 }else{
 
-alert("錯誤")
+btn.classList.add("wrong")
+
+buttons[q[2]].classList.add("correct")
 
 }
 
@@ -143,7 +207,7 @@ i++
 
 if(i>=list.length){
 
-alert("已做完")
+alert("已完成")
 
 home()
 
@@ -164,4 +228,5 @@ location.reload()
 </script>
 
 </body>
+
 </html>
