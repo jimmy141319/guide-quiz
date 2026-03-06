@@ -92,7 +92,7 @@
     }
 
     .correct{
-      background:#86efac !important;
+      background:#fde047 !important;
       color:#111 !important;
     }
 
@@ -115,6 +115,7 @@
       font-size:18px;
       min-height:28px;
       margin-top:6px;
+      line-height:1.6;
     }
 
     .controls{
@@ -175,7 +176,7 @@
 <body>
   <div class="container">
     <h1>導遊考試刷題 V3</h1>
-    <div class="subtitle">隨機出題・即時判斷・模擬考試</div>
+    <div class="subtitle">隨機出題・即時判斷・邊看邊記</div>
 
     <div class="toolbar">
       <label for="mode">模式：</label>
@@ -205,6 +206,7 @@
       <div class="note" id="note"></div>
 
       <div class="controls">
+        <button class="btn" onclick="showAnswer()">顯示答案</button>
         <button class="btn hidden" id="nextBtn" onclick="nextQuestion()">下一題</button>
       </div>
     </div>
@@ -242,6 +244,7 @@
     let current = 0;
     let score = 0;
     let answered = false;
+    let answerShown = false;
 
     function shuffleArray(arr){
       const copy = [...arr];
@@ -263,8 +266,17 @@
       }
     }
 
+    function resetButtons(){
+      for(let i = 0; i < 4; i++){
+        const btn = document.getElementById("btn" + i);
+        btn.classList.remove("correct", "wrong");
+        btn.disabled = false;
+      }
+    }
+
     function loadQuestion(){
       answered = false;
+      answerShown = false;
       document.getElementById("result").innerText = "";
       document.getElementById("note").innerText = "";
       document.getElementById("nextBtn").classList.add("hidden");
@@ -282,9 +294,23 @@
       for(let i = 0; i < 4; i++){
         const btn = document.getElementById("btn" + i);
         btn.innerText = q.options[i];
-        btn.classList.remove("correct", "wrong");
-        btn.disabled = false;
       }
+
+      resetButtons();
+    }
+
+    function showAnswer(){
+      if(answered || answerShown) return;
+
+      const q = questions[current];
+      const correctIndex = q.answer;
+
+      document.getElementById("btn" + correctIndex).classList.add("correct");
+      document.getElementById("note").innerText =
+        `正確答案：${q.options[correctIndex]}`;
+
+      answerShown = true;
+      document.getElementById("nextBtn").classList.remove("hidden");
     }
 
     function selectAnswer(index){
@@ -301,6 +327,8 @@
       if(index === correctIndex){
         document.getElementById("btn" + index).classList.add("correct");
         document.getElementById("result").innerText = "✔ 答對了";
+        document.getElementById("note").innerText =
+          `正確答案：${q.options[correctIndex]}`;
         score++;
       } else {
         document.getElementById("btn" + index).classList.add("wrong");
@@ -341,6 +369,8 @@
       buildQuestions();
       current = 0;
       score = 0;
+      answered = false;
+      answerShown = false;
       document.getElementById("finish-area").classList.add("hidden");
       document.getElementById("quiz-area").classList.remove("hidden");
       loadQuestion();
