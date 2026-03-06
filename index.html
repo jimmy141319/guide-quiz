@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>導遊考試神器 V11000</title>
+<title>導遊考試神器 V30000</title>
 
 <style>
-
 body{
 font-family:Arial;
 background:#f5f7fb;
@@ -36,248 +31,143 @@ padding:20px;
 background:white;
 padding:25px;
 border-radius:12px;
-box-shadow:0 5px 20px rgba(0,0,0,0.1);
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
 
 button{
-padding:12px 18px;
+width:100%;
+margin:10px 0;
+padding:15px;
+font-size:18px;
 border:none;
 border-radius:8px;
 background:#4a90e2;
 color:white;
-font-size:18px;
-margin:6px;
-cursor:pointer;
 }
-
-.option{
-background:#eef3ff;
-padding:12px;
-margin:8px 0;
-border-radius:8px;
-cursor:pointer;
-}
-
-.correct{
-background:#fde047;
-}
-
-.wrong{
-background:#fca5a5;
-}
-
-.hidden{
-display:none;
-}
-
 </style>
-
 </head>
 
 <body>
 
-<header>
-導遊考試神器 V11000
-</header>
+<header>導遊考試神器 V30000</header>
 
 <div class="container">
-
-<div class="card" id="home">
+<div class="card" id="menu">
 
 <h2>分科刷題</h2>
 
-<button onclick="start('resource')">觀光資源 150題</button>
-
-<button onclick="start('practice')">導遊實務 150題</button>
-
-<button onclick="start('law')">導遊法規 150題</button>
-
-<button onclick="exam()">模擬考 50題</button>
+<button onclick="start('resource')">觀光資源</button>
+<button onclick="start('practice')">導遊實務</button>
+<button onclick="start('law')">導遊法規</button>
 
 </div>
 
-<div class="card hidden" id="quiz">
+<div class="card" id="quiz" style="display:none">
 
-<div id="top"></div>
-
+<h3 id="qnum"></h3>
 <h2 id="question"></h2>
 
-<div id="options"></div>
+<div id="answers"></div>
 
 <button onclick="next()">下一題</button>
-
 <button onclick="home()">回首頁</button>
 
 </div>
-
 </div>
 
 <script>
 
-const base=[
-
-["台灣最高山是？",["玉山","雪山","阿里山","合歡山"],0],
-
+const resource=[
+["台灣最高峰是？",["玉山","雪山","阿里山","合歡山"],0],
 ["台灣最大天然湖泊？",["日月潭","石門水庫","曾文水庫","澄清湖"],0],
-
 ["太魯閣國家公園在哪？",["花蓮","台東","屏東","新竹"],0],
-
-["墾丁國家公園在哪？",["台東","屏東","高雄","嘉義"],1],
-
-["陽明山國家公園在哪？",["台北","桃園","新竹","台中"],0],
-
-["阿里山在哪？",["嘉義","南投","台中","花蓮"],0],
-
-["野柳地質公園在哪？",["新北","台北","基隆","宜蘭"],0],
-
-["士林夜市在哪？",["台北","新北","桃園","基隆"],0],
-
-["逢甲夜市在哪？",["台中","台南","高雄","嘉義"],0],
-
-["六合夜市在哪？",["高雄","台南","屏東","台東"],0]
-
+["阿里山位於哪裡？",["嘉義","南投","台中","花蓮"],0],
+["野柳地質公園在哪？",["新北","台北","宜蘭","基隆"],0]
 ]
 
-let quiz=[]
+const practice=[
+["導遊最重要責任？",["旅客安全","購物","拍照","聊天"],0],
+["導遊帶團第一件事？",["確認旅客","拍照","購物","休息"],0],
+["旅客生病時應？",["送醫","繼續行程","等待","離開"],0],
+["旅客走失應？",["協助尋找","繼續行程","離開","不處理"],0],
+["導遊服務原則？",["安全第一","購物第一","時間自由","隨便"],0]
+]
 
-let index=0
+const law=[
+["導遊主管機關？",["交通部觀光署","教育部","文化部","內政部"],0],
+["導遊需要什麼證？",["導遊證","身份證","學生證","工作證"],0],
+["旅行社主管機關？",["觀光署","警察局","法院","教育部"],0],
+["導遊執業需？",["合法證照","公司允許","朋友介紹","不用"],0],
+["旅行業管理單位？",["交通部觀光署","文化部","法院","警察"],0]
+]
 
-let score=0
-
-function generate(n){
-
-let arr=[]
-
-for(let i=0;i<n;i++){
-
-let q=base[i%base.length]
-
-arr.push({
-
-q:q[0]+"（"+(i+1)+"）",
-
-a:q[1],
-
-c:q[2]
-
-})
-
-}
-
-return arr
-
-}
-
-const resource=generate(150)
-
-const practice=generate(150)
-
-const law=generate(150)
+let list=[]
+let i=0
 
 function start(type){
 
-if(type=="resource") quiz=[...resource]
+document.getElementById("menu").style.display="none"
+document.getElementById("quiz").style.display="block"
 
-if(type=="practice") quiz=[...practice]
+if(type=="resource") list=resource
+if(type=="practice") list=practice
+if(type=="law") list=law
 
-if(type=="law") quiz=[...law]
-
-begin()
-
-}
-
-function exam(){
-
-quiz=[...resource,...practice,...law]
-
-.sort(()=>0.5-Math.random())
-
-.slice(0,50)
-
-begin()
-
-}
-
-function begin(){
-
-document.getElementById("home").classList.add("hidden")
-
-document.getElementById("quiz").classList.remove("hidden")
-
-index=0
-
-score=0
-
+i=0
 show()
 
 }
 
 function show(){
 
-let q=quiz[index]
+let q=list[i]
 
-document.getElementById("top").innerText="第 "+(index+1)+" 題 / "+quiz.length
-
-document.getElementById("question").innerText=q.q
+document.getElementById("qnum").innerHTML="第 "+(i+1)+" 題"
+document.getElementById("question").innerHTML=q[0]
 
 let html=""
 
-q.a.forEach((a,i)=>{
+for(let j=0;j<q[1].length;j++){
+html+=`<button onclick="answer(${j})">${q[1][j]}</button>`
+}
 
-html+=`<div class="option" onclick="choose(${i})">${a}</div>`
-
-})
-
-document.getElementById("options").innerHTML=html
+document.getElementById("answers").innerHTML=html
 
 }
 
-function choose(n){
+function answer(n){
 
-let q=quiz[index]
+let q=list[i]
 
-let opts=document.querySelectorAll(".option")
-
-opts.forEach((o,i)=>{
-
-if(i==q.c) o.classList.add("correct")
-
-if(i==n && n!=q.c) o.classList.add("wrong")
-
-})
-
-if(n==q.c) score++
+if(n==q[2]){
+alert("正確")
+}else{
+alert("錯誤")
+}
 
 }
 
 function next(){
 
-index++
+i++
 
-if(index<quiz.length){
+if(i>=list.length){
+alert("已做完")
+home()
+return
+}
 
 show()
-
-}else{
-
-alert("完成 成績 "+score+" / "+quiz.length)
-
-home()
-
-}
 
 }
 
 function home(){
 
-document.getElementById("quiz").classList.add("hidden")
-
-document.getElementById("home").classList.remove("hidden")
+location.reload()
 
 }
 
 </script>
 
 </body>
-
 </html>
