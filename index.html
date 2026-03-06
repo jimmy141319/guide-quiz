@@ -2,199 +2,295 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<title>導遊考試神器 V1000</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>導遊考試神器 V3000</title>
 <style>
-
 body{
-font-family:Arial;
-background:#f5f7fb;
-margin:0;
-text-align:center;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f7fb;
+  margin:0;
+  text-align:center;
 }
-
 header{
-background:#4a90e2;
-color:white;
-padding:25px;
-font-size:28px;
-font-weight:bold;
+  background:#4a90e2;
+  color:white;
+  padding:24px;
+  font-size:30px;
+  font-weight:bold;
 }
-
 .container{
-max-width:700px;
-margin:auto;
-padding:30px;
+  max-width:760px;
+  margin:auto;
+  padding:24px;
 }
-
 .card{
-background:white;
-padding:30px;
-border-radius:12px;
-box-shadow:0 6px 20px rgba(0,0,0,0.08);
-margin-bottom:20px;
+  background:white;
+  padding:28px;
+  border-radius:14px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  margin-bottom:20px;
 }
-
 button{
-padding:14px 22px;
-border:none;
-border-radius:8px;
-background:#4a90e2;
-color:white;
-font-size:18px;
-cursor:pointer;
+  padding:14px 22px;
+  border:none;
+  border-radius:10px;
+  background:#4a90e2;
+  color:white;
+  font-size:18px;
+  cursor:pointer;
+  margin:8px;
 }
-
+button:hover{
+  background:#357abd;
+}
 .option{
-display:block;
-width:100%;
-margin:10px 0;
-padding:14px;
-background:#eef3ff;
-border-radius:8px;
-cursor:pointer;
+  display:block;
+  width:100%;
+  margin:10px 0;
+  padding:14px;
+  background:#eef3ff;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:20px;
+  box-sizing:border-box;
 }
-
 .option:hover{
-background:#dfe8ff;
+  background:#dfe8ff;
 }
-
+.correct{
+  background:#fde047 !important;
+}
+.wrong{
+  background:#fca5a5 !important;
+}
 .result{
-font-size:26px;
-font-weight:bold;
-margin-top:20px;
+  font-size:26px;
+  font-weight:bold;
+  margin-top:20px;
 }
-
+.small{
+  color:#666;
+  font-size:16px;
+}
+#explanation{
+  margin-top:16px;
+  font-size:18px;
+  color:#333;
+  min-height:28px;
+}
+#topbar{
+  font-size:18px;
+  margin-bottom:18px;
+  color:#333;
+}
+.footer{
+  margin-top:30px;
+  font-size:14px;
+  color:#888;
+}
+.hidden{
+  display:none;
+}
 </style>
 </head>
-
 <body>
 
-<header>
-導遊考試神器 V1000
-</header>
+<header>導遊考試神器 V3000</header>
 
 <div class="container">
 
-<div class="card" id="start">
-<h2>華語導遊刷題</h2>
-<p>隨機 20 題測驗</p>
-<button onclick="startQuiz()">開始刷題</button>
+  <div class="card" id="start">
+    <h2>華語導遊刷題系統</h2>
+    <p>隨機 50 題練習版</p>
+    <button onclick="startQuiz()">開始刷題</button>
+    <button onclick="startWrongBook()">錯題本</button>
+    <div class="small">目前錯題數：<span id="wrongCount">0</span></div>
+  </div>
+
+  <div class="card hidden" id="quizBox">
+    <div id="topbar"></div>
+    <h2 id="question"></h2>
+    <div id="options"></div>
+    <div id="explanation"></div>
+    <button id="nextBtn" class="hidden" onclick="nextQuestion()">下一題</button>
+  </div>
+
+  <div class="card hidden" id="resultBox">
+    <div class="result" id="scoreText"></div>
+    <p id="resultDetail"></p>
+    <button onclick="restart()">重新測驗</button>
+    <button onclick="goHome()">回首頁</button>
+  </div>
+
 </div>
 
-<div class="card" id="quiz" style="display:none">
-<h3 id="qNumber"></h3>
-<h2 id="question"></h2>
-<div id="options"></div>
-</div>
-
-<div class="card" id="result" style="display:none">
-<div class="result" id="score"></div>
-<button onclick="restart()">重新測驗</button>
-</div>
-
-</div>
+<div class="footer">Version V3000</div>
 
 <script>
-
-const questions=[
-
-{q:"台灣最高山？",a:["玉山","雪山","阿里山","中央山脈"],c:0},
-{q:"台灣最大湖泊？",a:["日月潭","澄清湖","曾文水庫","鯉魚潭"],c:0},
-{q:"台北101高度？",a:["509m","400m","300m","600m"],c:0},
-{q:"故宮博物院在哪？",a:["台北","台中","台南","高雄"],c:0},
-{q:"阿里山著名？",a:["日出","沙漠","冰河","火山"],c:0},
-{q:"太魯閣在哪？",a:["花蓮","台東","宜蘭","屏東"],c:0},
-{q:"日月潭在哪？",a:["南投","台中","嘉義","花蓮"],c:0},
-{q:"九份在哪？",a:["新北","台北","基隆","桃園"],c:0},
-{q:"野柳女王頭在哪？",a:["新北","基隆","台北","桃園"],c:0},
-{q:"平溪天燈？",a:["新北","台北","宜蘭","桃園"],c:0},
-
-{q:"台灣貨幣？",a:["新台幣","美元","日圓","人民幣"],c:0},
-{q:"台灣人口約？",a:["2300萬","1億","500萬","8000萬"],c:0},
-{q:"台灣面積約？",a:["3.6萬平方公里","5萬","1萬","10萬"],c:0},
-{q:"台灣氣候？",a:["亞熱帶","寒帶","沙漠","極地"],c:0},
-{q:"台灣首都？",a:["台北","台中","高雄","台南"],c:0},
-
-{q:"士林夜市在哪？",a:["台北","新北","桃園","基隆"],c:0},
-{q:"逢甲夜市在哪？",a:["台中","台北","高雄","台南"],c:0},
-{q:"六合夜市在哪？",a:["高雄","台南","台中","台北"],c:0},
-{q:"花園夜市在哪？",a:["台南","高雄","台中","台北"],c:0},
-{q:"墾丁在哪？",a:["屏東","台東","花蓮","高雄"],c:0}
-
+const allQuestions = [
+  {q:"台灣最高山是？",a:["玉山","雪山","阿里山","合歡山"],c:0,e:"正確答案是玉山。"},
+  {q:"日月潭位於哪個縣市？",a:["台中","南投","嘉義","花蓮"],c:1,e:"正確答案是南投。"},
+  {q:"太魯閣國家公園位於哪裡？",a:["花蓮","台東","屏東","新竹"],c:0,e:"正確答案是花蓮。"},
+  {q:"台江國家公園位於哪裡？",a:["台南","高雄","屏東","嘉義"],c:0,e:"正確答案是台南。"},
+  {q:"墾丁國家公園位於哪裡？",a:["屏東","高雄","台東","宜蘭"],c:0,e:"正確答案是屏東。"},
+  {q:"故宮博物院位於哪裡？",a:["台北","台中","台南","高雄"],c:0,e:"正確答案是台北。"},
+  {q:"阿里山位於哪個縣？",a:["嘉義","南投","花蓮","台東"],c:0,e:"正確答案是嘉義。"},
+  {q:"陽明山國家公園位於哪裡？",a:["台北","台中","台南","高雄"],c:0,e:"正確答案是台北。"},
+  {q:"野柳地質公園位於哪裡？",a:["新北","台北","花蓮","宜蘭"],c:0,e:"正確答案是新北。"},
+  {q:"金門國家公園位於哪裡？",a:["金門","澎湖","台東","屏東"],c:0,e:"正確答案是金門。"},
+  {q:"台灣最高大樓是？",a:["台北101","85大樓","新光大樓","南山廣場"],c:0,e:"正確答案是台北101。"},
+  {q:"台灣首都是？",a:["台北","台中","高雄","台南"],c:0,e:"正確答案是台北。"},
+  {q:"台灣貨幣是？",a:["新台幣","美元","日圓","人民幣"],c:0,e:"正確答案是新台幣。"},
+  {q:"台灣人口約為？",a:["2300萬","500萬","1億","800萬"],c:0,e:"正確答案約為2300萬。"},
+  {q:"台灣面積約為？",a:["3.6萬平方公里","10萬平方公里","1萬平方公里","30萬平方公里"],c:0,e:"正確答案約為3.6萬平方公里。"},
+  {q:"逢甲夜市位於哪裡？",a:["台中","台北","高雄","台南"],c:0,e:"正確答案是台中。"},
+  {q:"六合夜市位於哪裡？",a:["高雄","台南","台北","台中"],c:0,e:"正確答案是高雄。"},
+  {q:"花園夜市位於哪裡？",a:["台南","高雄","台中","台北"],c:0,e:"正確答案是台南。"},
+  {q:"士林夜市位於哪裡？",a:["台北","新北","桃園","基隆"],c:0,e:"正確答案是台北。"},
+  {q:"九份位於哪裡？",a:["新北","台北","基隆","宜蘭"],c:0,e:"正確答案是新北。"},
+  {q:"平溪天燈位於哪裡？",a:["新北","台北","桃園","宜蘭"],c:0,e:"正確答案是新北。"},
+  {q:"清境農場位於哪裡？",a:["南投","台中","花蓮","嘉義"],c:0,e:"正確答案是南投。"},
+  {q:"合歡山主要位於哪裡？",a:["南投","台中","花蓮","台東"],c:0,e:"正確答案是南投。"},
+  {q:"台灣最大港口是？",a:["高雄港","基隆港","台中港","花蓮港"],c:0,e:"正確答案是高雄港。"},
+  {q:"台灣最大機場是？",a:["桃園機場","松山機場","小港機場","台中機場"],c:0,e:"正確答案是桃園機場。"},
+  {q:"台灣最大城市是？",a:["新北市","台北市","高雄市","台中市"],c:0,e:"正確答案是新北市。"},
+  {q:"台灣國花是？",a:["梅花","櫻花","蓮花","玫瑰"],c:0,e:"正確答案是梅花。"},
+  {q:"台灣最南端是？",a:["鵝鑾鼻","墾丁","枋山","台東"],c:0,e:"正確答案是鵝鑾鼻。"},
+  {q:"澎湖位於哪一個海域？",a:["台灣海峽","太平洋","東海","南海"],c:0,e:"正確答案是台灣海峽。"},
+  {q:"金門靠近哪裡？",a:["中國大陸","日本","韓國","菲律賓"],c:0,e:"正確答案是中國大陸。"},
+  {q:"台灣氣候主要屬於？",a:["亞熱帶","寒帶","沙漠","極地"],c:0,e:"正確答案是亞熱帶。"},
+  {q:"阿里山著名景觀是？",a:["日出","冰河","火山","沙漠"],c:0,e:"正確答案是日出。"},
+  {q:"野柳最知名地標是？",a:["女王頭","石門洞","太魯閣","斷崖"],c:0,e:"正確答案是女王頭。"},
+  {q:"台灣本島最北端附近著名景點是？",a:["富貴角","鵝鑾鼻","三仙台","七股"],c:0,e:"正確答案是富貴角。"},
+  {q:"台灣原住民族文化村位於哪裡？",a:["南投","台中","台南","台北"],c:0,e:"正確答案是南投。"},
+  {q:"台東熱氣球活動主要在？",a:["鹿野高台","池上","知本","成功"],c:0,e:"正確答案是鹿野高台。"},
+  {q:"花蓮著名海岸景點是？",a:["七星潭","淡水","安平","西子灣"],c:0,e:"正確答案是七星潭。"},
+  {q:"台南古蹟赤崁樓位於？",a:["台南","高雄","嘉義","屏東"],c:0,e:"正確答案是台南。"},
+  {q:"安平古堡位於？",a:["台南","高雄","基隆","新竹"],c:0,e:"正確答案是台南。"},
+  {q:"西子灣位於？",a:["高雄","台南","屏東","台東"],c:0,e:"正確答案是高雄。"},
+  {q:"淡水老街位於？",a:["新北","台北","基隆","桃園"],c:0,e:"正確答案是新北。"},
+  {q:"台灣最高行政機關所在地常見答案是？",a:["台北","台中","高雄","新北"],c:0,e:"正確答案是台北。"},
+  {q:"台灣最著名溫泉區之一北投位於？",a:["台北","新北","宜蘭","花蓮"],c:0,e:"正確答案是台北。"},
+  {q:"宜蘭著名景點太平山位於？",a:["宜蘭","花蓮","台中","南投"],c:0,e:"正確答案是宜蘭。"},
+  {q:"台灣最主要離島之一馬祖靠近？",a:["中國大陸","日本","沖繩","韓國"],c:0,e:"正確答案是中國大陸。"},
+  {q:"玉山位於哪個國家公園？",a:["玉山國家公園","太魯閣國家公園","墾丁國家公園","陽明山國家公園"],c:0,e:"正確答案是玉山國家公園。"},
+  {q:"陽明山最有名自然特色之一是？",a:["溫泉與火山地形","沙漠","冰河","峽谷"],c:0,e:"正確答案是溫泉與火山地形。"},
+  {q:"導遊帶團時最重要的是？",a:["旅客安全","購物安排","拍照速度","自由活動"],c:0,e:"正確答案是旅客安全。"},
+  {q:"旅客走失時導遊第一步應？",a:["立即聯絡並協助找回","直接繼續行程","先購物","先回飯店"],c:0,e:"正確答案是立即聯絡並協助找回。"},
+  {q:"旅客身體不適時導遊應優先？",a:["協助就醫","繼續行程","先拍照","先吃飯"],c:0,e:"正確答案是協助就醫。"}
 ];
 
-let quiz=[];
-let current=0;
-let score=0;
+let quiz = [];
+let current = 0;
+let score = 0;
+let answered = false;
+let wrongBook = JSON.parse(localStorage.getItem("guide_wrong_book") || "[]");
+
+function saveWrongBook(){
+  localStorage.setItem("guide_wrong_book", JSON.stringify(wrongBook));
+  document.getElementById("wrongCount").innerText = wrongBook.length;
+}
+
+function shuffle(arr){
+  return [...arr].sort(()=>0.5-Math.random());
+}
 
 function startQuiz(){
+  quiz = shuffle(allQuestions).slice(0,50);
+  current = 0;
+  score = 0;
+  answered = false;
+  document.getElementById("start").classList.add("hidden");
+  document.getElementById("resultBox").classList.add("hidden");
+  document.getElementById("quizBox").classList.remove("hidden");
+  showQuestion();
+}
 
-quiz = questions.sort(()=>0.5-Math.random()).slice(0,20)
-
-document.getElementById("start").style.display="none"
-document.getElementById("quiz").style.display="block"
-
-showQuestion()
-
+function startWrongBook(){
+  if(wrongBook.length===0){
+    alert("目前沒有錯題。");
+    return;
+  }
+  quiz = shuffle(allQuestions.filter(q => wrongBook.includes(q.q)));
+  current = 0;
+  score = 0;
+  answered = false;
+  document.getElementById("start").classList.add("hidden");
+  document.getElementById("resultBox").classList.add("hidden");
+  document.getElementById("quizBox").classList.remove("hidden");
+  showQuestion();
 }
 
 function showQuestion(){
+  answered = false;
+  document.getElementById("explanation").innerText = "";
+  document.getElementById("nextBtn").classList.add("hidden");
 
-let q=quiz[current]
+  const q = quiz[current];
+  document.getElementById("topbar").innerText =
+    "第 " + (current+1) + " 題 / 共 " + quiz.length + " 題　｜　目前得分：" + score;
+  document.getElementById("question").innerText = q.q;
 
-document.getElementById("qNumber").innerText=
-"第 "+(current+1)+" 題 / 20 題"
-
-document.getElementById("question").innerText=q.q
-
-let html=""
-
-for(let i=0;i<q.a.length;i++){
-
-html+=`<div class="option" onclick="choose(${i})">${q.a[i]}</div>`
-
-}
-
-document.getElementById("options").innerHTML=html
-
+  let html = "";
+  for(let i=0;i<q.a.length;i++){
+    html += `<div class="option" onclick="choose(${i})">${q.a[i]}</div>`;
+  }
+  document.getElementById("options").innerHTML = html;
 }
 
 function choose(i){
+  if(answered) return;
+  answered = true;
 
-if(i==quiz[current].c) score++
+  const q = quiz[current];
+  const opts = document.querySelectorAll(".option");
 
-current++
+  opts.forEach((el,index)=>{
+    if(index===q.c) el.classList.add("correct");
+    if(index===i && i!==q.c) el.classList.add("wrong");
+  });
 
-if(current<20){
+  if(i===q.c){
+    score++;
+  }else{
+    if(!wrongBook.includes(q.q)){
+      wrongBook.push(q.q);
+      saveWrongBook();
+    }
+  }
 
-showQuestion()
-
-}else{
-
-finish()
-
+  document.getElementById("explanation").innerText = q.e;
+  document.getElementById("nextBtn").classList.remove("hidden");
 }
 
+function nextQuestion(){
+  current++;
+  if(current < quiz.length){
+    showQuestion();
+  }else{
+    finish();
+  }
 }
 
 function finish(){
-
-document.getElementById("quiz").style.display="none"
-document.getElementById("result").style.display="block"
-
-document.getElementById("score").innerText=
-"完成！得分 "+score+" / 20"
-
+  document.getElementById("quizBox").classList.add("hidden");
+  document.getElementById("resultBox").classList.remove("hidden");
+  document.getElementById("scoreText").innerText = "完成！得分 " + score + " / " + quiz.length;
+  document.getElementById("resultDetail").innerText = "正確率：" + Math.round(score/quiz.length*100) + "%";
 }
 
 function restart(){
-
-location.reload()
-
+  location.reload();
 }
 
+function goHome(){
+  document.getElementById("quizBox").classList.add("hidden");
+  document.getElementById("resultBox").classList.add("hidden");
+  document.getElementById("start").classList.remove("hidden");
+  saveWrongBook();
+}
+
+saveWrongBook();
 </script>
 
 </body>
