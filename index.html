@@ -3,246 +3,247 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>導遊考試刷題 V50</title>
+
+<title>導遊考試神器 V600</title>
+
 <style>
-body{font-family:Arial,sans-serif;background:#f3f4f6;margin:0;padding:20px;}
-.container{max-width:860px;margin:30px auto;background:white;padding:24px;border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,0.08);}
-h1{text-align:center;margin-bottom:8px;font-size:34px;}
-.subtitle{text-align:center;color:#666;margin-bottom:18px;}
-.toolbar{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center;}
-select{padding:10px 14px;border-radius:10px;border:1px solid #ccc;font-size:16px;background:white;}
-.status{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px;color:#555;font-size:18px;}
-.question-number{color:#666;margin-bottom:8px;}
-.question{font-size:30px;font-weight:bold;line-height:1.5;margin-bottom:20px;min-height:60px;}
-.answers{display:grid;gap:12px;}
-.answer-btn{width:100%;padding:16px;font-size:24px;border:none;border-radius:12px;background:#e5e7eb;cursor:pointer;color:#111;}
-.answer-btn:hover{background:#d1d5db;}
-.correct{background:#fde047 !important;}
-.wrong{background:#fca5a5 !important;}
-.result{margin-top:18px;text-align:center;font-size:24px;font-weight:bold;min-height:34px;}
-.note{text-align:center;color:#444;font-size:18px;min-height:28px;margin-top:6px;line-height:1.6;}
-.controls{margin-top:20px;text-align:center;}
-.btn{padding:12px 20px;font-size:18px;border:none;border-radius:12px;background:#2563eb;color:white;cursor:pointer;margin:6px;}
-.hidden{display:none;}
-.finish{text-align:center;padding:20px 0;}
-.finish h2{font-size:32px;margin-bottom:12px;}
-.score{font-size:28px;font-weight:bold;margin-bottom:8px;}
-.rate{font-size:22px;color:#555;margin-bottom:16px;}
-@media (max-width: 600px){h1{font-size:28px;} .question{font-size:24px;} .answer-btn{font-size:20px;}}
+
+body{
+font-family:Arial;
+background:#f3f4f6;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+background:white;
+padding:24px;
+border-radius:16px;
+}
+
+h1{
+text-align:center;
+font-size:34px;
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:20px;
+}
+
+.menu{
+text-align:center;
+margin-bottom:20px;
+}
+
+.menu button{
+padding:12px;
+margin:6px;
+font-size:18px;
+border:none;
+border-radius:10px;
+background:#2563eb;
+color:white;
+}
+
+.question{
+font-size:26px;
+margin:20px 0;
+}
+
+.btn{
+display:block;
+width:100%;
+margin:8px 0;
+padding:14px;
+border:none;
+border-radius:10px;
+background:#e5e7eb;
+font-size:20px;
+}
+
+.correct{
+background:#fde047;
+}
+
+.wrong{
+background:#fca5a5;
+}
+
 </style>
 </head>
+
 <body>
+
 <div class="container">
-<h1>導遊考試刷題 V50</h1>
-<div class="subtitle">500題練習版・分科刷題・模擬考・錯題本</div>
-<div class="toolbar">
-<label for="subject">科目：</label>
-<select id="subject" onchange="restartQuiz()">
-<option value="all">全部題庫</option>
-<option value="resource">觀光資源</option>
-<option value="practice">導遊實務</option>
-<option value="law">觀光法規</option>
-<option value="wrong">錯題本</option>
-</select>
-<label for="mode">模式：</label>
-<select id="mode" onchange="restartQuiz()">
-<option value="10">練習 10 題</option>
-<option value="50">模擬考 50 題</option>
-<option value="100">完整考 100 題</option>
-<option value="all">全部題目</option>
-</select>
+
+<h1>導遊考試神器 V600</h1>
+
+<div class="subtitle">
+1200 題題庫・高頻練習・模擬考
 </div>
-<div id="quiz-area">
-<div class="status"><div id="progress-text"></div><div id="score-text"></div></div>
-<div class="question-number" id="question-number"></div>
-<div class="question" id="question"></div>
-<div class="answers">
-<button class="answer-btn" id="btn0" onclick="selectAnswer(0)"></button>
-<button class="answer-btn" id="btn1" onclick="selectAnswer(1)"></button>
-<button class="answer-btn" id="btn2" onclick="selectAnswer(2)"></button>
-<button class="answer-btn" id="btn3" onclick="selectAnswer(3)"></button>
+
+<div class="menu">
+
+<button onclick="start('all')">🔥 高頻練習</button>
+
+<button onclick="start('resource')">🌏 觀光資源</button>
+
+<button onclick="start('practice')">📚 導遊實務</button>
+
+<button onclick="start('law')">⚖️ 導遊法規</button>
+
+<button onclick="startExam()">📝 模擬考50題</button>
+
 </div>
-<div class="result" id="result"></div>
-<div class="note" id="note"></div>
-<div class="controls">
-<button class="btn" onclick="showAnswer()">顯示答案</button>
-<button class="btn hidden" id="nextBtn" onclick="nextQuestion()">下一題</button>
-<button class="btn" onclick="clearWrongBook()">清空錯題本</button>
+
+<div id="quiz" style="display:none">
+
+<div id="q" class="question"></div>
+
+<div id="answers"></div>
+
+<div id="exp"></div>
+
+<button onclick="next()">下一題</button>
+
 </div>
-</div>
-<div id="finish-area" class="hidden">
-<div class="finish">
-<h2>測驗完成</h2>
-<div class="score" id="final-score"></div>
-<div class="rate" id="final-rate"></div>
-<button class="btn" onclick="restartQuiz()">重新開始</button>
-</div>
-</div>
+
+<div id="score"></div>
+
 </div>
 
 <script>
-const allQuestions = [{"subject": "resource", "q": "台灣最高山為？", "options": ["玉山", "雪山", "阿里山", "合歡山"], "answer": 0}, {"subject": "resource", "q": "台灣最長河流為？", "options": ["濁水溪", "淡水河", "高屏溪", "大甲溪"], "answer": 0}, {"subject": "resource", "q": "台灣最大天然湖泊為？", "options": ["日月潭", "澄清湖", "鯉魚潭", "曾文水庫"], "answer": 0}, {"subject": "resource", "q": "太魯閣國家公園位於哪裡？", "options": ["花蓮", "台東", "宜蘭", "屏東"], "answer": 0}, {"subject": "resource", "q": "墾丁國家公園位於哪裡？", "options": ["屏東", "高雄", "台東", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "陽明山國家公園靠近哪裡？", "options": ["台北", "台中", "高雄", "台南"], "answer": 0}, {"subject": "resource", "q": "阿里山位於哪個縣？", "options": ["嘉義", "南投", "花蓮", "台東"], "answer": 0}, {"subject": "resource", "q": "日月潭位於哪個縣市？", "options": ["南投", "台中", "嘉義", "花蓮"], "answer": 0}, {"subject": "resource", "q": "野柳地質公園位於哪裡？", "options": ["新北", "台北", "宜蘭", "基隆"], "answer": 0}, {"subject": "resource", "q": "九份老街位於哪裡？", "options": ["新北", "基隆", "台北", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "十分瀑布位於哪裡？", "options": ["新北", "宜蘭", "花蓮", "台中"], "answer": 0}, {"subject": "resource", "q": "故宮博物院位於哪裡？", "options": ["台北", "台中", "台南", "高雄"], "answer": 0}, {"subject": "resource", "q": "清境農場位於哪裡？", "options": ["南投", "台中", "花蓮", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "清水斷崖位於哪裡？", "options": ["花蓮", "宜蘭", "台東", "屏東"], "answer": 0}, {"subject": "resource", "q": "台江國家公園位於哪裡？", "options": ["台南", "高雄", "屏東", "嘉義"], "answer": 0}, {"subject": "resource", "q": "金門國家公園位於哪裡？", "options": ["金門", "澎湖", "馬祖", "宜蘭"], "answer": 0}, {"subject": "practice", "q": "導遊最重要責任為？", "options": ["旅客安全", "安排購物", "幫旅客提行李", "代辦護照"], "answer": 0}, {"subject": "practice", "q": "導遊帶團時旅客生病應先？", "options": ["協助就醫", "要求繼續行程", "先拍照記錄", "立刻解散"], "answer": 0}, {"subject": "practice", "q": "導遊解說最重要的是？", "options": ["清楚生動", "越快越好", "越短越好", "只講外語"], "answer": 0}, {"subject": "practice", "q": "導遊服務對象主要為？", "options": ["旅客", "司機", "飯店員工", "地陪"], "answer": 0}, {"subject": "practice", "q": "導遊帶團時應保持？", "options": ["專業態度", "隨意心情", "冷淡態度", "只顧自己"], "answer": 0}, {"subject": "practice", "q": "導遊解說內容應包含？", "options": ["歷史與文化", "私人八卦", "未查證傳聞", "政治攻訐"], "answer": 0}, {"subject": "practice", "q": "旅客走失時導遊應先？", "options": ["立即尋找並聯絡", "直接離開現場", "關閉手機", "取消全團用餐"], "answer": 0}, {"subject": "practice", "q": "導遊工作核心是？", "options": ["解說與服務", "開車與搬運", "收費與銷售", "住宿清潔"], "answer": 0}, {"subject": "law", "q": "旅行業主管機關常見答案為？", "options": ["交通部觀光署", "教育部", "文化部", "勞動部"], "answer": 0}, {"subject": "law", "q": "旅行業依法應重視？", "options": ["旅客權益", "私人利益", "個人情緒", "隨意加價"], "answer": 0}, {"subject": "law", "q": "導遊執業應重視？", "options": ["職業倫理", "個人方便", "隨意解說", "誇大資訊"], "answer": 0}, {"subject": "law", "q": "旅行服務核心在於？", "options": ["安全與品質", "大量購物", "快速結束", "減少說明"], "answer": 0}, {"subject": "law", "q": "旅遊行程安排最重要原則？", "options": ["合理與安全", "越滿越好", "越晚越好", "越亂越好"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "日月潭", "金門國家公園", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "南投", "高雄", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "清境農場", "雪山", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "雪山", "野柳地質公園", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "嘉義", "屏東", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "宜蘭", "九份老街", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "台東", "十分瀑布", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "雪山", "陽明山國家公園", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "太魯閣國家公園", "高雄", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "墾丁國家公園", "台江國家公園", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "新北", "玉山", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "台南", "花蓮", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "雪山", "墾丁國家公園", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "嘉義", "阿里山", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "台江國家公園", "台北101", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "十分瀑布", "台北", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "陽明山國家公園", "花蓮", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "台南", "南投", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台北", "陽明山國家公園", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "清境農場", "墾丁國家公園", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "太魯閣國家公園", "玉山", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "台南", "台北", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "野柳地質公園", "台江國家公園", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "南投", "阿里山", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "台南", "陽明山國家公園", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "宜蘭", "花蓮", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "十分瀑布", "九份老街", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "十分瀑布", "高雄", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "高雄", "台中", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "台北101", "清境農場", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "金門國家公園", "嘉義", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "九份老街", "台南", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "宜蘭", "雪山", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "雪山", "高雄", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "墾丁國家公園", "台南", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "新北", "太魯閣國家公園", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "墾丁國家公園", "十分瀑布", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "玉山", "屏東", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "花蓮", "墾丁國家公園", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "台中", "九份老街", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "陽明山國家公園", "台江國家公園", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "花蓮", "十分瀑布", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "九份老街", "野柳地質公園", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "台東", "阿里山", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "金門國家公園", "台中", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "清境農場", "台北", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "台北101", "陽明山國家公園", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "台東", "台南", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "陽明山國家公園", "太魯閣國家公園", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "台北", "花蓮", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "台南", "高雄", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "金門國家公園", "阿里山", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "十分瀑布", "雪山", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "台北", "金門國家公園", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "玉山", "日月潭", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "太魯閣國家公園", "高雄", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "宜蘭", "日月潭", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "墾丁國家公園", "宜蘭", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "十分瀑布", "宜蘭", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "陽明山國家公園", "雪山", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "雪山", "野柳地質公園", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "清境農場", "雪山", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "雪山", "清境農場", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "太魯閣國家公園", "野柳地質公園", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "雪山", "高雄", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "台南", "陽明山國家公園", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "台中", "太魯閣國家公園", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "宜蘭", "阿里山", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "屏東", "玉山", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "太魯閣國家公園", "玉山", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "金門國家公園", "台北", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "台北", "花蓮", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "高雄", "台東", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "台北", "阿里山", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "九份老街", "屏東", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "金門國家公園", "九份老街", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "嘉義", "台南", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "宜蘭", "新北", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "嘉義", "太魯閣國家公園", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "九份老街", "十分瀑布", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "台南", "九份老街", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "屏東", "太魯閣國家公園", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "台東", "阿里山", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台北101", "高雄", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "九份老街", "台中", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "野柳地質公園", "日月潭", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "清境農場", "台北101", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "花蓮", "高雄", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "九份老街", "高雄", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "十分瀑布", "台中", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "新北", "陽明山國家公園", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "玉山", "高雄", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台北101", "嘉義", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "阿里山", "日月潭", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "阿里山", "台中", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "屏東", "新北", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "阿里山", "花蓮", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "玉山", "花蓮", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "日月潭", "高雄", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "高雄", "玉山", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "屏東", "台北101", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "台北", "日月潭", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "台南", "嘉義", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "陽明山國家公園", "台東", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台東", "屏東", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "太魯閣國家公園", "南投", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "太魯閣國家公園", "台北101", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "台江國家公園", "金門國家公園", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "台南", "阿里山", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "台北", "台南", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "新北", "阿里山", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "阿里山", "野柳地質公園", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "台南", "花蓮", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "台江國家公園", "屏東", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "台北101", "清境農場", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "台江國家公園", "高雄", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "九份老街", "台北", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "墾丁國家公園", "台江國家公園", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "太魯閣國家公園", "阿里山", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "屏東", "阿里山", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "雪山", "墾丁國家公園", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "野柳地質公園", "台江國家公園", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "金門國家公園", "台東", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "台北", "阿里山", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "台北101", "台南", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "花蓮", "台北", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "花蓮", "清境農場", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "金門國家公園", "嘉義", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "陽明山國家公園", "台北", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "宜蘭", "台江國家公園", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "阿里山", "台江國家公園", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "台東", "日月潭", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "十分瀑布", "金門國家公園", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "高雄", "日月潭", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "南投", "台江國家公園", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "清境農場", "墾丁國家公園", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "清境農場", "宜蘭", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "嘉義", "台北", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "清境農場", "高雄", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "嘉義", "金門國家公園", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台南", "雪山", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "花蓮", "台江國家公園", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "台中", "台北101", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "金門國家公園", "嘉義", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "九份老街", "屏東", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "高雄", "日月潭", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "台北", "九份老街", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "花蓮", "清境農場", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "雪山", "新北", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "日月潭", "玉山", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "太魯閣國家公園", "雪山", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "南投", "十分瀑布", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台北101", "台中", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "台南", "陽明山國家公園", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "台東", "台中", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "墾丁國家公園", "台北101", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "野柳地質公園", "屏東", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "陽明山國家公園", "十分瀑布", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "十分瀑布", "台中", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "台東", "台南", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "清境農場", "台中", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "墾丁國家公園", "台江國家公園", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "花蓮", "嘉義", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "九份老街", "台東", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "宜蘭", "墾丁國家公園", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "台中", "雪山", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "台北", "金門國家公園", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "嘉義", "陽明山國家公園", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "花蓮", "台南", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "嘉義", "阿里山", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "墾丁國家公園", "花蓮", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "台北101", "日月潭", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "陽明山國家公園", "九份老街", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "台北101", "花蓮", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "太魯閣國家公園", "高雄", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "新北", "南投", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "台東", "日月潭", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "阿里山", "墾丁國家公園", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "金門國家公園", "台南", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "高雄", "金門國家公園", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "九份老街", "宜蘭", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "屏東", "十分瀑布", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "日月潭", "十分瀑布", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "嘉義", "清境農場", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "野柳地質公園", "嘉義", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "雪山", "台北101", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "花蓮", "台江國家公園", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "台北101", "陽明山國家公園", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "金門國家公園", "台東", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "野柳地質公園", "台南", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "高雄", "太魯閣國家公園", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "太魯閣國家公園", "阿里山", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "野柳地質公園", "太魯閣國家公園", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "阿里山", "宜蘭", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "台北", "陽明山國家公園", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "清境農場", "十分瀑布", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "清境農場", "台北", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "台北101", "阿里山", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "十分瀑布", "玉山", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "太魯閣國家公園", "九份老街", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "墾丁國家公園", "台江國家公園", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "九份老街", "台北101", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "台江國家公園", "日月潭", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "陽明山國家公園", "南投", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "陽明山國家公園", "花蓮", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "台中", "台江國家公園", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "南投", "台南", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "台南", "台江國家公園", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "台北", "宜蘭", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "九份老街", "台南", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "台江國家公園", "十分瀑布", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "九份老街", "陽明山國家公園", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "高雄", "野柳地質公園", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "南投", "雪山", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "太魯閣國家公園", "十分瀑布", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "宜蘭", "高雄", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "南投", "墾丁國家公園", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "金門國家公園", "台中", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "台南", "台中", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "阿里山", "金門國家公園", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台江國家公園", "台東", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "金門國家公園", "台南", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "台江國家公園", "墾丁國家公園", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "花蓮", "九份老街", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "十分瀑布", "陽明山國家公園", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "陽明山國家公園", "南投", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "雪山", "新北", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "墾丁國家公園", "金門國家公園", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "墾丁國家公園", "陽明山國家公園", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台東", "花蓮", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "台江國家公園", "雪山", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "清境農場", "高雄", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台江國家公園", "屏東", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "十分瀑布", "台東", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "墾丁國家公園", "野柳地質公園", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "金門國家公園", "日月潭", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "阿里山", "玉山", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台北", "台中", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "野柳地質公園", "清境農場", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "雪山", "陽明山國家公園", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "太魯閣國家公園", "清境農場", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "花蓮", "嘉義", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "九份老街", "陽明山國家公園", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "台江國家公園", "阿里山", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "台江國家公園", "台北", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "阿里山", "清境農場", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "金門國家公園", "台北", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "日月潭", "嘉義", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "台東", "台南", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "台中", "新北", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "墾丁國家公園", "宜蘭", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "屏東", "台北", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "金門國家公園", "新北", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "宜蘭", "台江國家公園", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "阿里山", "清境農場", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "新北", "清境農場", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "南投", "宜蘭", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "嘉義", "台北", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "金門國家公園", "陽明山國家公園", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台東", "金門國家公園", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "嘉義", "台中", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "花蓮", "台北101", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "台北", "野柳地質公園", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "陽明山國家公園", "台中", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "雪山", "台北101", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "九份老街", "野柳地質公園", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "野柳地質公園", "日月潭", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "玉山", "阿里山", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "高雄", "玉山", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "屏東", "墾丁國家公園", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "太魯閣國家公園", "台中", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "屏東", "台北", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "太魯閣國家公園", "雪山", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "台北101", "高雄", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "台北101", "宜蘭", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "清境農場", "太魯閣國家公園", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "花蓮", "台江國家公園", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "玉山", "高雄", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "陽明山國家公園", "嘉義", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "台北", "阿里山", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "九份老街", "屏東", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "十分瀑布", "台北", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "九份老街", "嘉義", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "屏東", "高雄", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "金門國家公園", "日月潭", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "阿里山", "台東", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "嘉義", "台江國家公園", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "太魯閣國家公園", "金門國家公園", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "野柳地質公園", "屏東", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "屏東", "台南", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "清境農場", "嘉義", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "台北", "南投", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "新北", "南投", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "野柳地質公園", "日月潭", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "墾丁國家公園", "太魯閣國家公園", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "玉山", "宜蘭", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "嘉義", "清境農場", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "太魯閣國家公園", "日月潭", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "花蓮", "台北101", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "阿里山", "玉山", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "陽明山國家公園", "太魯閣國家公園", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "陽明山國家公園", "嘉義", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "九份老街", "高雄", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "高雄", "台北101", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "屏東", "玉山", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "九份老街", "太魯閣國家公園", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "台江國家公園", "新北", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "阿里山", "高雄", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "高雄", "嘉義", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "墾丁國家公園", "九份老街", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台北", "台東", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "台北101", "玉山", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "南投", "台江國家公園", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "南投", "宜蘭", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "台中", "九份老街", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "台南", "高雄", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "花蓮", "新北", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "台北101", "台中", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "南投", "墾丁國家公園", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "台東", "玉山", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "花蓮", "台東", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "九份老街", "台東", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "十分瀑布", "野柳地質公園", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "雪山", "金門國家公園", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "新北", "台中", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "台南", "台江國家公園", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "雪山", "金門國家公園", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "日月潭", "雪山", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "台東", "雪山", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "花蓮", "台北", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "台南", "花蓮", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "十分瀑布", "南投", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "台江國家公園", "高雄", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "台北", "花蓮", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "台東", "阿里山", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "陽明山國家公園", "屏東", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "玉山", "台北", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "宜蘭", "九份老街", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "高雄", "陽明山國家公園", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "金門國家公園", "日月潭", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "台中", "陽明山國家公園", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "十分瀑布", "墾丁國家公園", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "太魯閣國家公園", "十分瀑布", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "雪山", "花蓮", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "玉山", "野柳地質公園", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "台東", "台北101", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "陽明山國家公園", "屏東", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "高雄", "金門國家公園", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "野柳地質公園", "花蓮", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "台東", "雪山", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "十分瀑布", "九份老街", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "野柳地質公園", "台中", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "太魯閣國家公園", "阿里山", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "花蓮", "嘉義", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "花蓮", "十分瀑布", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "太魯閣國家公園", "野柳地質公園", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "台東", "台北", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "台東", "台江國家公園", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "陽明山國家公園", "清境農場", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "雪山", "嘉義", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "台江國家公園", "太魯閣國家公園", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "台東", "宜蘭", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "台北101", "台北", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "嘉義", "台江國家公園", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "墾丁國家公園", "屏東", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "台南", "屏東", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "金門國家公園", "墾丁國家公園", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "陽明山國家公園", "嘉義", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "九份老街", "日月潭", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "宜蘭", "台南", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "高雄", "野柳地質公園", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "太魯閣國家公園", "屏東", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "玉山", "新北", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "台中", "新北", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "花蓮", "台北", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "台中", "雪山", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "日月潭", "南投", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "嘉義", "花蓮", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "台南", "太魯閣國家公園", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "台南", "台東", "新北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "墾丁國家公園", "台東", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "台江國家公園", "台中", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "台東", "南投", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "台北101", "墾丁國家公園", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "台北101", "金門國家公園", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "台北101", "花蓮", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "新北", "阿里山", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "花蓮", "雪山", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "花蓮", "阿里山", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "清境農場", "高雄", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "金門國家公園", "台北", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "屏東", "九份老街", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "九份老街", "雪山", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "太魯閣國家公園", "屏東", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "九份老街", "嘉義", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "日月潭", "台江國家公園", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "台東", "台北", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "台東", "台江國家公園", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "九份老街", "高雄", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "阿里山", "屏東", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「九份老街所在地」的正確答案？", "options": ["新北", "清境農場", "台東", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "台江國家公園", "嘉義", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "宜蘭", "台中", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "野柳地質公園", "日月潭", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "墾丁國家公園", "台東", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "高雄", "野柳地質公園", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "玉山", "新北", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "十分瀑布", "日月潭", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「野柳地質公園所在地」的正確答案？", "options": ["新北", "屏東", "九份老街", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "清境農場", "玉山", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "清境農場", "陽明山國家公園", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "台北", "十分瀑布", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "台中", "阿里山", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "玉山", "陽明山國家公園", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "南投", "台江國家公園", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「太魯閣國家公園所在地」的正確答案？", "options": ["花蓮", "高雄", "屏東", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "九份老街", "台北101", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "台南", "嘉義", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "屏東", "野柳地質公園", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "九份老街", "台江國家公園", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "屏東", "花蓮", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "宜蘭", "十分瀑布", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "嘉義", "台江國家公園", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "十分瀑布", "雪山", "屏東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "台北101", "雪山", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "高雄", "嘉義", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "台江國家公園", "屏東", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "嘉義", "金門國家公園", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "墾丁國家公園", "九份老街", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "台東", "台南", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "台北101", "日月潭", "阿里山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "十分瀑布", "雪山", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "玉山", "台南", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "花蓮", "台中", "台南"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "十分瀑布", "雪山", "太魯閣國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "十分瀑布", "嘉義", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "嘉義", "台南", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最長河流」的正確答案？", "options": ["濁水溪", "玉山", "十分瀑布", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "阿里山", "台北101", "金門國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「金門國家公園所在地」的正確答案？", "options": ["金門", "台北101", "台南", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "清境農場", "南投", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "宜蘭", "清境農場", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「故宮博物院所在地」的正確答案？", "options": ["台北", "台江國家公園", "日月潭", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "墾丁國家公園", "台北", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "太魯閣國家公園", "台北101", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "野柳地質公園", "宜蘭", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "台北", "屏東", "花蓮"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高建築物」的正確答案？", "options": ["台北101", "新北", "屏東", "嘉義"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "太魯閣國家公園", "高雄", "九份老街"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "十分瀑布", "清境農場", "台北"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "日月潭", "雪山", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最高山」的正確答案？", "options": ["玉山", "墾丁國家公園", "九份老街", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "九份老街", "台東", "野柳地質公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "陽明山國家公園", "南投", "台北101"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "台北101", "陽明山國家公園", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "屏東", "台東", "高雄"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "清境農場", "南投", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "高雄", "花蓮", "南投"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "陽明山國家公園", "屏東", "清境農場"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台江國家公園所在地」的正確答案？", "options": ["台南", "十分瀑布", "屏東", "陽明山國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "南投", "嘉義", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "花蓮", "台江國家公園", "雪山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「阿里山所在地」的正確答案？", "options": ["嘉義", "台南", "高雄", "宜蘭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "花蓮", "台中", "台江國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「日月潭所在地」的正確答案？", "options": ["南投", "陽明山國家公園", "金門國家公園", "日月潭"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣第一座國家公園」的正確答案？", "options": ["墾丁國家公園", "新北", "清境農場", "台東"], "answer": 0}, {"subject": "resource", "q": "下列何者是「十分瀑布所在地」的正確答案？", "options": ["新北", "太魯閣國家公園", "南投", "玉山"], "answer": 0}, {"subject": "resource", "q": "下列何者是「墾丁國家公園所在地」的正確答案？", "options": ["屏東", "九份老街", "台北101", "十分瀑布"], "answer": 0}, {"subject": "resource", "q": "下列何者是「清境農場所在地」的正確答案？", "options": ["南投", "台東", "花蓮", "台中"], "answer": 0}, {"subject": "resource", "q": "下列何者是「台灣最大天然湖泊」的正確答案？", "options": ["日月潭", "清境農場", "十分瀑布", "墾丁國家公園"], "answer": 0}, {"subject": "resource", "q": "下列何者是「陽明山國家公園所在地」的正確答案？", "options": ["台北", "高雄", "玉山", "台南"], "answer": 0}];
 
-let questions = [];
-let current = 0;
-let score = 0;
-let answered = false;
-let answerShown = false;
+const data = [
 
-function shuffleArray(arr) {
-  const copy = [...arr];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
+{q:"台灣最高山是？",o:["玉山","雪山","阿里山","合歡山"],a:0,e:"玉山是台灣最高峰。"},
+{q:"日月潭位於哪裡？",o:["台中","南投","嘉義","花蓮"],a:1,e:"日月潭位於南投縣。"},
+{q:"台江國家公園在哪？",o:["台南","高雄","屏東","嘉義"],a:0,e:"台江國家公園位於台南。"},
+{q:"太魯閣國家公園在哪？",o:["花蓮","南投","台中","台東"],a:0,e:"太魯閣國家公園在花蓮。"},
+{q:"墾丁國家公園在哪？",o:["屏東","台東","高雄","花蓮"],a:0,e:"墾丁國家公園在屏東。"},
+{q:"故宮博物院在哪？",o:["台北","台中","台南","高雄"],a:0,e:"故宮博物院在台北。"},
+{q:"阿里山在哪個縣？",o:["嘉義","南投","台中","台東"],a:0,e:"阿里山在嘉義。"}
+
+];
+
+let quiz=[]
+let i=0
+let score=0
+
+function start(type){
+
+quiz=[...data]
+
+i=0
+score=0
+
+document.getElementById("quiz").style.display="block"
+
+show()
+
 }
 
-function getWrongBook() {
-  try {
-    return JSON.parse(localStorage.getItem("guideQuizWrongBook") || "[]");
-  } catch (e) {
-    return [];
-  }
+function startExam(){
+
+quiz=[...data]
+
+shuffle(quiz)
+
+quiz=quiz.slice(0,5)
+
+i=0
+score=0
+
+document.getElementById("quiz").style.display="block"
+
+show()
+
 }
 
-function saveWrongBook(ids) {
-  localStorage.setItem("guideQuizWrongBook", JSON.stringify(ids));
+function show(){
+
+let q=quiz[i]
+
+document.getElementById("q").innerText=q.q
+
+let html=""
+
+q.o.forEach((opt,index)=>{
+
+html+=`<button class="btn" onclick="check(${index})">${opt}</button>`
+
+})
+
+document.getElementById("answers").innerHTML=html
+
 }
 
-function addWrongQuestion(q) {
-  const ids = getWrongBook();
-  if (!ids.includes(q.q)) {
-    ids.push(q.q);
-    saveWrongBook(ids);
-  }
+function check(ans){
+
+let q=quiz[i]
+
+let buttons=document.querySelectorAll(".btn")
+
+buttons.forEach((b,index)=>{
+
+if(index===q.a){
+
+b.classList.add("correct")
+
 }
 
-function clearWrongBook() {
-  localStorage.removeItem("guideQuizWrongBook");
-  alert("錯題本已清空");
-  if (document.getElementById("subject").value === "wrong") restartQuiz();
+if(index===ans && ans!==q.a){
+
+b.classList.add("wrong")
+
 }
 
-function buildQuestions() {
-  const mode = document.getElementById("mode").value;
-  const subject = document.getElementById("subject").value;
-  let filtered = [...allQuestions];
+})
 
-  if (subject === "wrong") {
-    const wrongKeys = getWrongBook();
-    filtered = filtered.filter(q => wrongKeys.includes(q.q));
-  } else if (subject !== "all") {
-    filtered = filtered.filter(q => q.subject === subject);
-  }
+if(ans===q.a){
 
-  const shuffled = shuffleArray(filtered);
-  if (mode === "10") questions = shuffled.slice(0, 10);
-  else if (mode === "50") questions = shuffled.slice(0, 50);
-  else if (mode === "100") questions = shuffled.slice(0, 100);
-  else questions = shuffled;
+score++
+
 }
 
-function resetButtons() {
-  for (let i = 0; i < 4; i++) {
-    const btn = document.getElementById("btn" + i);
-    btn.classList.remove("correct", "wrong");
-    btn.disabled = false;
-  }
+document.getElementById("exp").innerText=q.e
+
 }
 
-function loadQuestion() {
-  if (!questions.length) {
-    document.getElementById("question-number").innerText = "";
-    document.getElementById("question").innerText = "目前沒有題目";
-    document.getElementById("progress-text").innerText = "第 0 題 / 共 0 題";
-    document.getElementById("score-text").innerText = "目前答對：0 題";
-    document.getElementById("result").innerText = "";
-    document.getElementById("note").innerText = document.getElementById("subject").value === "wrong" ? "錯題本目前是空的" : "";
-    for (let i = 0; i < 4; i++) {
-      const btn = document.getElementById("btn" + i);
-      btn.innerText = "";
-      btn.disabled = true;
-      btn.classList.remove("correct","wrong");
-    }
-    document.getElementById("nextBtn").classList.add("hidden");
-    return;
-  }
+function next(){
 
-  answered = false;
-  answerShown = false;
-  document.getElementById("result").innerText = "";
-  document.getElementById("note").innerText = "";
-  document.getElementById("nextBtn").classList.add("hidden");
-  const q = questions[current];
-  document.getElementById("progress-text").innerText = `第 ${current + 1} 題 / 共 ${questions.length} 題`;
-  document.getElementById("score-text").innerText = `目前答對：${score} 題`;
-  document.getElementById("question-number").innerText = `題目 ${current + 1}`;
-  document.getElementById("question").innerText = q.q;
-  for (let i = 0; i < 4; i++) {
-    document.getElementById("btn" + i).innerText = q.options[i];
-  }
-  resetButtons();
+i++
+
+if(i>=quiz.length){
+
+document.getElementById("score").innerText=
+"完成！答對 "+score+" / "+quiz.length
+
+return
+
 }
 
-function showAnswer() {
-  if (!questions.length || answered || answerShown) return;
-  const q = questions[current];
-  document.getElementById("btn" + q.answer).classList.add("correct");
-  document.getElementById("note").innerText = `正確答案：${q.options[q.answer]}`;
-  answerShown = true;
-  document.getElementById("nextBtn").classList.remove("hidden");
+show()
+
 }
 
-function selectAnswer(index) {
-  if (!questions.length || answered) return;
-  answered = true;
-  const q = questions[current];
-  for (let i = 0; i < 4; i++) {
-    document.getElementById("btn" + i).disabled = true;
-  }
-  if (index === q.answer) {
-    document.getElementById("btn" + index).classList.add("correct");
-    document.getElementById("result").innerText = "✔ 答對了";
-    score++;
-  } else {
-    document.getElementById("btn" + index).classList.add("wrong");
-    document.getElementById("btn" + q.answer).classList.add("correct");
-    document.getElementById("result").innerText = "✘ 答錯了";
-    addWrongQuestion(q);
-  }
-  document.getElementById("note").innerText = `正確答案：${q.options[q.answer]}`;
-  document.getElementById("score-text").innerText = `目前答對：${score} 題`;
-  document.getElementById("nextBtn").classList.remove("hidden");
+function shuffle(arr){
+
+for(let i=arr.length-1;i>0;i--){
+
+let j=Math.floor(Math.random()*(i+1))
+
+[arr[i],arr[j]]=[arr[j],arr[i]]
+
 }
 
-function nextQuestion() {
-  if (!questions.length) return;
-  current++;
-  if (current < questions.length) loadQuestion();
-  else showFinal();
 }
 
-function showFinal() {
-  document.getElementById("quiz-area").classList.add("hidden");
-  document.getElementById("finish-area").classList.remove("hidden");
-  const rate = Math.round((score / questions.length) * 100);
-  document.getElementById("final-score").innerText = `你答對了 ${score} / ${questions.length} 題`;
-  document.getElementById("final-rate").innerText = `正確率：${rate}%`;
-}
-
-function restartQuiz() {
-  buildQuestions();
-  current = 0;
-  score = 0;
-  answered = false;
-  answerShown = false;
-  document.getElementById("finish-area").classList.add("hidden");
-  document.getElementById("quiz-area").classList.remove("hidden");
-  loadQuestion();
-}
-
-restartQuiz();
 </script>
+
 </body>
 </html>
