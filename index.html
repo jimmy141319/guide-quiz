@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>導遊考試神器 V800</title>
+<title>導遊考試神器 V810</title>
 <style>
 body{
   font-family:Arial,Helvetica,sans-serif;
@@ -77,23 +77,25 @@ button:hover{
   margin-top:16px;
   font-size:18px;
   color:#333;
+  min-height:28px;
 }
 </style>
 </head>
 <body>
 
-<header>導遊考試神器 V800</header>
+<header>導遊考試神器 V810</header>
 
 <div class="container">
 
 <div class="card" id="start">
   <h2>華語導遊刷題</h2>
-  <p>點下面開始練習</p>
+  <p>10 題練習版</p>
   <button onclick="startQuiz()">開始刷題</button>
 </div>
 
 <div class="card" id="quiz" style="display:none">
   <h2 id="question"></h2>
+  <div id="progress"></div>
   <div id="options"></div>
   <div id="explanation"></div>
   <button id="nextBtn" onclick="nextQuestion()" style="display:none;">下一題</button>
@@ -106,7 +108,7 @@ button:hover{
 
 </div>
 
-<div class="footer">Version V800</div>
+<div class="footer">Version V810</div>
 
 <script>
 const quizData = [
@@ -127,6 +129,48 @@ const quizData = [
     a:["花蓮","台東","屏東","新竹"],
     correct:0,
     exp:"正確答案是花蓮。"
+  },
+  {
+    q:"台江國家公園位於哪裡？",
+    a:["台南","高雄","屏東","嘉義"],
+    correct:0,
+    exp:"正確答案是台南。"
+  },
+  {
+    q:"墾丁國家公園位於哪裡？",
+    a:["屏東","高雄","台東","宜蘭"],
+    correct:0,
+    exp:"正確答案是屏東。"
+  },
+  {
+    q:"故宮博物院位於哪裡？",
+    a:["台北","台中","台南","高雄"],
+    correct:0,
+    exp:"正確答案是台北。"
+  },
+  {
+    q:"阿里山位於哪個縣？",
+    a:["嘉義","南投","花蓮","台東"],
+    correct:0,
+    exp:"正確答案是嘉義。"
+  },
+  {
+    q:"陽明山國家公園位於哪裡？",
+    a:["台北","台中","台南","高雄"],
+    correct:0,
+    exp:"正確答案是台北。"
+  },
+  {
+    q:"野柳地質公園位於哪裡？",
+    a:["新北","台北","花蓮","宜蘭"],
+    correct:0,
+    exp:"正確答案是新北。"
+  },
+  {
+    q:"金門國家公園位於哪裡？",
+    a:["金門","澎湖","台東","屏東"],
+    correct:0,
+    exp:"正確答案是金門。"
   }
 ];
 
@@ -135,7 +179,11 @@ let score = 0;
 let answered = false;
 
 function startQuiz(){
+  current = 0;
+  score = 0;
+  answered = false;
   document.getElementById("start").style.display = "none";
+  document.getElementById("result").style.display = "none";
   document.getElementById("quiz").style.display = "block";
   showQuestion();
 }
@@ -145,8 +193,9 @@ function showQuestion(){
   document.getElementById("explanation").innerText = "";
   document.getElementById("nextBtn").style.display = "none";
 
-  let q = quizData[current];
+  const q = quizData[current];
   document.getElementById("question").innerText = q.q;
+  document.getElementById("progress").innerText = "第 " + (current + 1) + " 題 / 共 " + quizData.length + " 題";
 
   let html = "";
   for(let i=0;i<q.a.length;i++){
@@ -159,8 +208,8 @@ function choose(i){
   if(answered) return;
   answered = true;
 
-  let q = quizData[current];
-  let opts = document.querySelectorAll(".option");
+  const q = quizData[current];
+  const opts = document.querySelectorAll(".option");
 
   opts.forEach((el,index)=>{
     if(index === q.correct) el.classList.add("correct");
@@ -189,11 +238,9 @@ function showResult(){
 }
 
 function restart(){
-  current = 0;
-  score = 0;
-  answered = false;
-  document.getElementById("result").style.display = "none";
   document.getElementById("start").style.display = "block";
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("result").style.display = "none";
 }
 </script>
 
