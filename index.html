@@ -2,249 +2,224 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
+<title>導遊考試神器 V820</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>導遊考試神器 V810</title>
+
 <style>
+
 body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f5f7fb;
-  margin:0;
-  padding:0;
-  text-align:center;
+font-family:Arial;
+background:#f5f7fb;
+margin:0;
+text-align:center;
 }
+
 header{
-  background:#4a90e2;
-  color:white;
-  padding:25px;
-  font-size:28px;
-  font-weight:bold;
+background:#4a90e2;
+color:white;
+padding:25px;
+font-size:28px;
+font-weight:bold;
 }
+
 .container{
-  max-width:700px;
-  margin:auto;
-  padding:30px;
+max-width:700px;
+margin:auto;
+padding:30px;
 }
+
 .card{
-  background:white;
-  padding:30px;
-  border-radius:12px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.08);
-  margin-bottom:20px;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.08);
+margin-bottom:20px;
 }
+
 button{
-  padding:14px 20px;
-  border:none;
-  border-radius:8px;
-  background:#4a90e2;
-  color:white;
-  font-size:18px;
-  cursor:pointer;
-  margin:8px;
+padding:14px 22px;
+border:none;
+border-radius:8px;
+background:#4a90e2;
+color:white;
+font-size:18px;
+cursor:pointer;
 }
-button:hover{
-  background:#357ABD;
-}
+
 .option{
-  display:block;
-  width:100%;
-  margin:10px 0;
-  padding:14px;
-  background:#eef3ff;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:20px;
+display:block;
+width:100%;
+margin:10px 0;
+padding:14px;
+background:#eef3ff;
+border-radius:8px;
+cursor:pointer;
 }
+
 .option:hover{
-  background:#dfe8ff;
+background:#dfe8ff;
 }
-.correct{
-  background:#fde047 !important;
-}
-.wrong{
-  background:#fca5a5 !important;
-}
+
 .result{
-  font-size:24px;
-  font-weight:bold;
-  margin-top:20px;
+font-size:26px;
+font-weight:bold;
+margin-top:20px;
 }
-.footer{
-  margin-top:40px;
-  font-size:14px;
-  color:#888;
-}
-#explanation{
-  margin-top:16px;
-  font-size:18px;
-  color:#333;
-  min-height:28px;
-}
+
 </style>
 </head>
+
 <body>
 
-<header>導遊考試神器 V810</header>
+<header>
+導遊考試神器 V820
+</header>
 
 <div class="container">
 
 <div class="card" id="start">
-  <h2>華語導遊刷題</h2>
-  <p>10 題練習版</p>
-  <button onclick="startQuiz()">開始刷題</button>
+<h2>華語導遊刷題</h2>
+<p>50 題練習版</p>
+<button onclick="startQuiz()">開始刷題</button>
 </div>
 
 <div class="card" id="quiz" style="display:none">
-  <h2 id="question"></h2>
-  <div id="progress"></div>
-  <div id="options"></div>
-  <div id="explanation"></div>
-  <button id="nextBtn" onclick="nextQuestion()" style="display:none;">下一題</button>
+<h3 id="qNumber"></h3>
+<h2 id="question"></h2>
+<div id="options"></div>
 </div>
 
 <div class="card" id="result" style="display:none">
-  <div class="result" id="resultText"></div>
-  <button onclick="restart()">重新測驗</button>
+<div class="result" id="score"></div>
+<button onclick="restart()">重新測驗</button>
 </div>
 
 </div>
-
-<div class="footer">Version V810</div>
 
 <script>
-const quizData = [
-  {
-    q:"台灣最高山是？",
-    a:["玉山","雪山","阿里山","合歡山"],
-    correct:0,
-    exp:"正確答案是玉山。"
-  },
-  {
-    q:"日月潭位於哪個縣市？",
-    a:["台中","南投","嘉義","花蓮"],
-    correct:1,
-    exp:"正確答案是南投。"
-  },
-  {
-    q:"太魯閣國家公園位於哪裡？",
-    a:["花蓮","台東","屏東","新竹"],
-    correct:0,
-    exp:"正確答案是花蓮。"
-  },
-  {
-    q:"台江國家公園位於哪裡？",
-    a:["台南","高雄","屏東","嘉義"],
-    correct:0,
-    exp:"正確答案是台南。"
-  },
-  {
-    q:"墾丁國家公園位於哪裡？",
-    a:["屏東","高雄","台東","宜蘭"],
-    correct:0,
-    exp:"正確答案是屏東。"
-  },
-  {
-    q:"故宮博物院位於哪裡？",
-    a:["台北","台中","台南","高雄"],
-    correct:0,
-    exp:"正確答案是台北。"
-  },
-  {
-    q:"阿里山位於哪個縣？",
-    a:["嘉義","南投","花蓮","台東"],
-    correct:0,
-    exp:"正確答案是嘉義。"
-  },
-  {
-    q:"陽明山國家公園位於哪裡？",
-    a:["台北","台中","台南","高雄"],
-    correct:0,
-    exp:"正確答案是台北。"
-  },
-  {
-    q:"野柳地質公園位於哪裡？",
-    a:["新北","台北","花蓮","宜蘭"],
-    correct:0,
-    exp:"正確答案是新北。"
-  },
-  {
-    q:"金門國家公園位於哪裡？",
-    a:["金門","澎湖","台東","屏東"],
-    correct:0,
-    exp:"正確答案是金門。"
-  }
+
+const questions=[
+
+{q:"台灣最高山是？",a:["玉山","阿里山","雪山","中央山脈"],c:0},
+{q:"台北101高度？",a:["509m","400m","300m","600m"],c:0},
+{q:"故宮博物院在哪？",a:["台北","台中","台南","高雄"],c:0},
+{q:"日月潭在哪個縣？",a:["南投","台中","嘉義","花蓮"],c:0},
+{q:"台灣最大湖泊？",a:["日月潭","澄清湖","曾文水庫","鯉魚潭"],c:0},
+{q:"台灣首都是？",a:["台北","台中","高雄","台南"],c:0},
+{q:"阿里山著名的是？",a:["日出","沙漠","冰河","火山"],c:0},
+{q:"太魯閣在？",a:["花蓮","台東","宜蘭","屏東"],c:0},
+{q:"台灣最大機場？",a:["桃園機場","松山","小港","台中"],c:0},
+{q:"台灣總統府在哪？",a:["台北","台中","台南","高雄"],c:0},
+
+{q:"台灣最大城市？",a:["新北","台北","高雄","台中"],c:0},
+{q:"台灣貨幣？",a:["新台幣","人民幣","日圓","美元"],c:0},
+{q:"台灣國花？",a:["梅花","櫻花","玫瑰","蓮花"],c:0},
+{q:"台灣國鳥？",a:["藍鵲","麻雀","老鷹","白鷺"],c:0},
+{q:"台灣最大港口？",a:["高雄港","基隆港","台中港","花蓮港"],c:0},
+
+{q:"阿里山小火車在哪？",a:["嘉義","台北","台中","台南"],c:0},
+{q:"九份在哪？",a:["新北","台北","基隆","宜蘭"],c:0},
+{q:"野柳女王頭在哪？",a:["新北","基隆","台北","桃園"],c:0},
+{q:"平溪天燈？",a:["新北","台北","宜蘭","桃園"],c:0},
+{q:"士林夜市在哪？",a:["台北","新北","桃園","基隆"],c:0},
+
+{q:"台灣最大夜市？",a:["士林","逢甲","六合","花園"],c:1},
+{q:"逢甲夜市在哪？",a:["台中","台北","高雄","台南"],c:0},
+{q:"六合夜市在哪？",a:["高雄","台南","台北","台中"],c:0},
+{q:"花園夜市在哪？",a:["台南","高雄","台中","台北"],c:0},
+
+{q:"台灣最南端？",a:["鵝鑾鼻","墾丁","台東","屏東"],c:0},
+{q:"墾丁在哪？",a:["屏東","台東","花蓮","高雄"],c:0},
+{q:"太平山在哪？",a:["宜蘭","台北","花蓮","台東"],c:0},
+{q:"清境農場在哪？",a:["南投","台中","花蓮","嘉義"],c:0},
+{q:"合歡山在哪？",a:["南投","台中","花蓮","台東"],c:0},
+
+{q:"台灣第一高樓？",a:["台北101","85大樓","新光大樓","遠雄"],c:0},
+{q:"台灣第一大學？",a:["台大","清華","交大","政大"],c:0},
+{q:"台灣最大島？",a:["台灣本島","澎湖","金門","馬祖"],c:0},
+
+{q:"澎湖在哪？",a:["台灣海峽","太平洋","東海","南海"],c:0},
+{q:"金門靠近？",a:["中國","日本","韓國","菲律賓"],c:0},
+
+{q:"台灣面積約？",a:["3.6萬平方公里","5萬","1萬","10萬"],c:0},
+
+{q:"台灣人口約？",a:["2300萬","1億","500萬","1000萬"],c:0},
+
+{q:"台灣氣候？",a:["亞熱帶","沙漠","寒帶","極地"],c:0}
+
 ];
 
-let current = 0;
-let score = 0;
-let answered = false;
+let quiz=[];
+let current=0;
+let score=0;
 
 function startQuiz(){
-  current = 0;
-  score = 0;
-  answered = false;
-  document.getElementById("start").style.display = "none";
-  document.getElementById("result").style.display = "none";
-  document.getElementById("quiz").style.display = "block";
-  showQuestion();
+
+quiz = questions.sort(()=>0.5-Math.random()).slice(0,50)
+
+document.getElementById("start").style.display="none"
+document.getElementById("quiz").style.display="block"
+
+showQuestion()
+
 }
 
 function showQuestion(){
-  answered = false;
-  document.getElementById("explanation").innerText = "";
-  document.getElementById("nextBtn").style.display = "none";
 
-  const q = quizData[current];
-  document.getElementById("question").innerText = q.q;
-  document.getElementById("progress").innerText = "第 " + (current + 1) + " 題 / 共 " + quizData.length + " 題";
+let q=quiz[current]
 
-  let html = "";
-  for(let i=0;i<q.a.length;i++){
-    html += `<div class="option" onclick="choose(${i})">${q.a[i]}</div>`;
-  }
-  document.getElementById("options").innerHTML = html;
+document.getElementById("qNumber").innerText=
+"第 "+(current+1)+" 題 / 50 題"
+
+document.getElementById("question").innerText=q.q
+
+let html=""
+
+for(let i=0;i<q.a.length;i++){
+
+html+=`<div class="option" onclick="choose(${i})">${q.a[i]}</div>`
+
+}
+
+document.getElementById("options").innerHTML=html
+
 }
 
 function choose(i){
-  if(answered) return;
-  answered = true;
 
-  const q = quizData[current];
-  const opts = document.querySelectorAll(".option");
+if(i==quiz[current].c) score++
 
-  opts.forEach((el,index)=>{
-    if(index === q.correct) el.classList.add("correct");
-    if(index === i && i !== q.correct) el.classList.add("wrong");
-  });
+current++
 
-  if(i === q.correct) score++;
+if(current<50){
 
-  document.getElementById("explanation").innerText = q.exp;
-  document.getElementById("nextBtn").style.display = "inline-block";
+showQuestion()
+
+}else{
+
+finish()
+
 }
 
-function nextQuestion(){
-  current++;
-  if(current < quizData.length){
-    showQuestion();
-  }else{
-    showResult();
-  }
 }
 
-function showResult(){
-  document.getElementById("quiz").style.display = "none";
-  document.getElementById("result").style.display = "block";
-  document.getElementById("resultText").innerText = "完成！答對 " + score + " / " + quizData.length;
+function finish(){
+
+document.getElementById("quiz").style.display="none"
+document.getElementById("result").style.display="block"
+
+document.getElementById("score").innerText=
+"完成！得分 "+score+" / 50"
+
 }
 
 function restart(){
-  document.getElementById("start").style.display = "block";
-  document.getElementById("quiz").style.display = "none";
-  document.getElementById("result").style.display = "none";
+
+location.reload()
+
 }
+
 </script>
 
 </body>
 </html>
-
-
