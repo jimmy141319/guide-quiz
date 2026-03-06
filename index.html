@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>導遊考試刷題</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 720px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .topbar {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    .question-number {
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 24px;
+      font-weight: bold;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .answers {
+      display: grid;
+      gap: 12px;
+    }
+    .answer-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background: #e5e7eb;
+      cursor: pointer;
+    }
+    .answer-btn:hover {
+      background: #d1d5db;
+    }
+    .correct {
+      background: #86efac !important;
+    }
+    .wrong {
+      background: #fca5a5 !important;
+    }
+    .result {
+      margin-top: 18px;
+      font-size: 22px;
+      text-align: center;
+      font-weight: bold;
+      min-height: 32px;
+    }
+    .controls {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 12px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: #fff;
+      cursor: pointer;
+      margin: 6px;
+    }
+    .btn:hover {
+      background: #1d4ed8;
+    }
+    .hidden {
+      display: none;
+    }
+    .score {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .mode-box {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>導遊考試刷題</h1>
+    <div class="topbar">手機也能像正式考試一樣作答</div>
+
+    <div class="mode-box">
+      <label>題目模式：</label>
+      <select id="mode" onchange="restartQuiz()">
+        <option value="all">全部題目</option>
+        <option value="random10">隨機10題</option>
+      </select>
+    </div>
+
+    <div id="quiz-area">
+      <div class="question-number" id="question-number"></div>
+      <div class="question" id="question"></div>
+
+      <div class="answers">
+        <button class="answer-btn" id="btn0" onclick="selectAnswer(0)"></button>
+        <button class="answer-btn" id="btn1" onclick="selectAnswer(1)"></button>
+        <button class="answer-btn" id="btn2" onclick="selectAnswer(2)"></button>
+        <button class="answer-btn" id="btn3" onclick="selectAnswer(3)"></button>
+      </div>
+
+      <div class="result" id="result"></div>
+
+      <div class="controls">
+        <button class="btn hidden" id="nextBtn" onclick="nextQuestion()">下一題</button>
+      </div>
+    </div>
+
+    <div id="finish-area" class="hidden">
+      <div class="score" id="final-score"></div>
+      <div class="controls">
+        <button class="btn" onclick="restartQuiz()">重新開始</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const allQuestions = [
+      { q: "台灣最高山為？", options: ["玉山", "雪山", "阿里山", "合歡山"], answer: 0 },
+      { q: "日月潭位於哪個縣市？", options: ["台中", "南投", "嘉義", "花蓮"], answer: 1 },
+      { q: "導遊主要服務對象是？", options: ["外國旅客", "學生", "商人", "老師"], answer: 0 },
+      { q: "太魯閣國家公園位於哪裡？", options: ["台東", "花蓮", "宜蘭", "屏東"], answer: 1 },
+      { q: "導遊最重要的責任是？", options: ["購物", "旅客安全", "拍照", "娛樂"], answer: 1 },
+      { q: "阿里山位於哪裡？", options: ["嘉義", "南投", "花蓮", "台東"], answer: 0 },
+      { q: "故宮博物院位於哪裡？", options: ["台北", "台中", "台南", "高雄"], answer: 0 },
+      { q: "導遊帶團時旅客生病應先？", options: ["協助就醫", "不理會", "回飯店", "結束行程"], answer: 0 },
+      { q: "墾丁國家公園位於哪裡？", options: ["屏東", "高雄", "台東", "宜蘭"], answer: 0 },
+      { q: "導遊解說最重要的是？", options: ["清楚生動", "講很快", "講很少", "不講"], answer: 0 }
+    ];
+
+    let questions = [];
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function buildQuestions() {
+      const mode = document.getElementById("mode").value;
+      if (mode === "random10") {
+        questions = shuffleArray(allQuestions).slice(0, 10);
+      } else {
+        questions = [...allQuestions];
+      }
+    }
+
+    function loadQuestion() {
+      answered = false;
+      document.getElementById("result").innerText = "";
+      document.getElementById("nextBtn").classList.add("hidden");
+
+      const q = questions[currentQuestion];
+      document.getElementById("question-number").innerText =
+        `第 ${currentQuestion + 1} 題 / 共 ${questions.length} 題`;
+      document.getElementById("question").innerText = q.q;
+
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById("btn" + i);
+        btn.innerText = q.options[i];
+        btn.classList.remove("correct", "wrong");
+        btn.disabled = false;
+      }
+    }
+
+    function selectAnswer(index) {
+      if (answered) return;
+      answered = true;
+
+      const correctIndex = questions[currentQuestion].answer;
+
+      for (let i = 0; i < 4; i++) {
+        document.getElementById("btn" + i).disabled = true;
+      }
+
+      if (index === correctIndex) {
+        document.getElementById("btn" + index).classList.add("correct");
+        document.getElementById("result").innerText = "✔ 答對了";
+        score++;
+      } else {
+        document.getElementById("btn" + index).classList.add("wrong");
+        document.getElementById("btn" + correctIndex).classList.add("correct");
+        document.getElementById("result").innerText = "✘ 答錯了";
+      }
+
+      document.getElementById("nextBtn").classList.remove("hidden");
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        showFinalScore();
+      }
+    }
+
+    function showFinalScore() {
+      document.getElementById("quiz-area").classList.add("hidden");
+      document.getElementById("finish-area").classList.remove("hidden");
+      document.getElementById("final-score").innerText =
+        `測驗完成，你答對了 ${score} / ${questions.length} 題`;
+    }
+
+    function restartQuiz() {
+      buildQuestions();
+      currentQuestion = 0;
+      score = 0;
+      document.getElementById("finish-area").classList.add("hidden");
+      document.getElementById("quiz-area").classList.remove("hidden");
+      loadQuestion();
+    }
+
+    restartQuiz();
+  </script>
+</body>
+</html>
