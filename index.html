@@ -12,7 +12,7 @@
       padding: 20px;
     }
     .box {
-      max-width: 820px;
+      max-width: 860px;
       margin: 30px auto;
       background: white;
       padding: 24px;
@@ -42,6 +42,7 @@
       font-weight: bold;
       margin: 20px 0;
       min-height: 48px;
+      line-height: 1.5;
     }
     .meta {
       color: #555;
@@ -90,6 +91,13 @@
       min-height: 28px;
       font-size: 20px;
     }
+    .section-badge {
+      text-align: center;
+      font-size: 18px;
+      color: #444;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
     @media (max-width: 600px) {
       .q { font-size: 24px; }
       button { font-size: 20px; }
@@ -111,6 +119,7 @@
       <select id="count" onchange="startQuiz()">
         <option value="10">練習 10 題</option>
         <option value="50">模擬 50 題</option>
+        <option value="150">正式考試 150 題</option>
       </select>
     </div>
 
@@ -119,6 +128,7 @@
       <div id="score">答對 0 題</div>
     </div>
 
+    <div class="section-badge" id="sectionLabel"></div>
     <div class="q" id="question"></div>
 
     <div class="answers">
@@ -153,32 +163,52 @@
       return arr;
     }
 
+    function getSectionName(subject) {
+      if (subject === "resource") return "第一節：觀光資源";
+      if (subject === "law") return "第二節：法規行政";
+      if (subject === "practice") return "第三節：導遊實務";
+      return "全部隨機";
+    }
+
+    function buildOfficialExam() {
+      const resourcePool = shuffle(questions.filter(q => q.subject === "resource")).slice(0, 50);
+      const lawPool = shuffle(questions.filter(q => q.subject === "law")).slice(0, 50);
+      const practicePool = shuffle(questions.filter(q => q.subject === "practice")).slice(0, 50);
+      return [...resourcePool, ...lawPool, ...practicePool];
+    }
+
     function startQuiz() {
       const subject = document.getElementById("subject").value;
-      const count = parseInt(document.getElementById("count").value, 10);
+      const count = document.getElementById("count").value;
 
       let pool = [...questions];
 
-      if (subject !== "all") {
-        pool = pool.filter(q => q.subject === subject);
-      }
-
-      if (pool.length === 0) {
-        document.getElementById("question").innerText = "目前這個科目還沒有題目";
-        document.getElementById("progress").innerText = "第 0 題 / 共 0 題";
-        document.getElementById("score").innerText = "答對 0 題";
-        document.getElementById("result").innerText = "";
-        document.getElementById("note").innerText = "";
-        for (let i = 0; i < 4; i++) {
-          const btn = document.getElementById("btn" + i);
-          btn.innerText = "";
-          btn.disabled = true;
-          btn.classList.remove("correct", "wrong");
+      if (count === "150") {
+        quizQuestions = buildOfficialExam();
+      } else {
+        if (subject !== "all") {
+          pool = pool.filter(q => q.subject === subject);
         }
-        return;
+
+        if (pool.length === 0) {
+          document.getElementById("question").innerText = "目前這個科目還沒有題目";
+          document.getElementById("progress").innerText = "第 0 題 / 共 0 題";
+          document.getElementById("score").innerText = "答對 0 題";
+          document.getElementById("result").innerText = "";
+          document.getElementById("note").innerText = "";
+          document.getElementById("sectionLabel").innerText = "";
+          for (let i = 0; i < 4; i++) {
+            const btn = document.getElementById("btn" + i);
+            btn.innerText = "";
+            btn.disabled = true;
+            btn.classList.remove("correct", "wrong");
+          }
+          return;
+        }
+
+        quizQuestions = shuffle(pool).slice(0, Math.min(parseInt(count, 10), pool.length));
       }
 
-      quizQuestions = shuffle(pool).slice(0, Math.min(count, pool.length));
       current = 0;
       score = 0;
       render();
@@ -191,6 +221,7 @@
       document.getElementById("question").innerText = q.q;
       document.getElementById("result").innerText = "";
       document.getElementById("note").innerText = "";
+      document.getElementById("sectionLabel").innerText = getSectionName(q.subject);
 
       for (let i = 0; i < 4; i++) {
         const btn = document.getElementById("btn" + i);
@@ -238,10 +269,26 @@
 
       current++;
       if (current >= quizQuestions.length) {
-        alert(`測驗完成\n答對 ${score} / ${quizQuestions.length} 題`);
+        const total = quizQuestions.length;
+        const rate = Math.round((score / total) * 100);
+
+        const resourceCount = quizQuestions.filter(q => q.subject === "resource").length;
+        const lawCount = quizQuestions.filter(q => q.subject === "law").length;
+        const practiceCount = quizQuestions.filter(q => q.subject === "practice").length;
+
+        alert(
+          `測驗完成\n` +
+          `答對 ${score} / ${total} 題\n` +
+          `正確率 ${rate}%\n\n` +
+          `第一節：${resourceCount} 題\n` +
+          `第二節：${lawCount} 題\n` +
+          `第三節：${practiceCount} 題`
+        );
+
         startQuiz();
         return;
       }
+
       render();
     }
 
