@@ -10,13 +10,13 @@
 body{
 font-family:Arial;
 background:#f3f4f6;
-padding:20px;
 margin:0;
+padding:20px;
 }
 
 .box{
 max-width:860px;
-margin:auto;
+margin:30px auto;
 background:white;
 padding:24px;
 border-radius:16px;
@@ -24,6 +24,24 @@ border-radius:16px;
 
 h1{
 text-align:center;
+}
+
+.toolbar{
+display:flex;
+gap:10px;
+justify-content:center;
+margin-bottom:20px;
+}
+
+select{
+padding:10px;
+font-size:16px;
+}
+
+.meta{
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
 }
 
 .q{
@@ -34,7 +52,7 @@ margin:20px 0;
 
 .answers{
 display:grid;
-gap:12px;
+gap:10px;
 }
 
 button{
@@ -46,14 +64,26 @@ background:#e5e7eb;
 }
 
 .correct{
-background:#fde047;
+background:#fde047 !important;
 }
 
 .wrong{
-background:#fca5a5;
+background:#fca5a5 !important;
+}
+
+.controls{
+text-align:center;
+margin-top:20px;
+}
+
+.action{
+background:#2563eb;
+color:white;
+margin:5px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -62,13 +92,44 @@ background:#fca5a5;
 
 <h1>導遊考試刷題</h1>
 
+<div class="toolbar">
+
+<select id="subject" onchange="startQuiz()">
+<option value="all">全部隨機</option>
+<option value="resource">第一節：觀光資源</option>
+<option value="law">第二節：法規行政</option>
+<option value="practice">第三節：導遊實務</option>
+</select>
+
+<select id="count" onchange="startQuiz()">
+<option value="10">練習 10 題</option>
+<option value="50">模擬 50 題</option>
+<option value="150">正式考試 150 題</option>
+</select>
+
+</div>
+
+<div class="meta">
+<div id="progress"></div>
+<div id="score"></div>
+</div>
+
 <div class="q" id="question"></div>
 
 <div class="answers">
-<button id="a0"></button>
-<button id="a1"></button>
-<button id="a2"></button>
-<button id="a3"></button>
+
+<button id="btn0" onclick="selectAnswer(0)"></button>
+<button id="btn1" onclick="selectAnswer(1)"></button>
+<button id="btn2" onclick="selectAnswer(2)"></button>
+<button id="btn3" onclick="selectAnswer(3)"></button>
+
+</div>
+
+<div class="controls">
+
+<button class="action" onclick="showAnswer()">顯示答案</button>
+<button class="action" onclick="nextQuestion()">下一題</button>
+
 </div>
 
 </div>
@@ -77,58 +138,139 @@ background:#fca5a5;
 
 <script>
 
-let qlist=[]
-let now=0
+let quiz=[]
+let current=0
+let score=0
+let order=[0,1,2,3]
 
 function shuffle(a){
+
 for(let i=a.length-1;i>0;i--){
+
 let j=Math.floor(Math.random()*(i+1))
-[a[i],a[j]]=[a[j],a[i]]
+
+let t=a[i]
+
+a[i]=a[j]
+
+a[j]=t
+
 }
+
 return a
-}
-
-function start(){
-
-qlist=shuffle([...questions]).slice(0,50)
-
-show()
 
 }
 
-function show(){
+function startQuiz(){
 
-let q=qlist[now]
+let subject=document.getElementById("subject").value
+let count=parseInt(document.getElementById("count").value)
+
+let pool=questions
+
+if(subject!=="all"){
+pool=questions.filter(q=>q.subject===subject)
+}
+
+quiz=shuffle(pool).slice(0,count)
+
+current=0
+score=0
+
+render()
+
+}
+
+function render(){
+
+let q=quiz[current]
+
+order=shuffle([0,1,2,3])
+
+document.getElementById("progress").innerText=
+"第 "+(current+1)+" 題 / 共 "+quiz.length+" 題"
+
+document.getElementById("score").innerText=
+"答對 "+score+" 題"
 
 document.getElementById("question").innerText=q.q
 
-let order=shuffle([0,1,2,3])
-
 for(let i=0;i<4;i++){
 
-let btn=document.getElementById("a"+i)
+let btn=document.getElementById("btn"+i)
+
+btn.className=""
+
+btn.disabled=false
 
 btn.innerText=q.options[order[i]]
 
-btn.onclick=function(){
+}
 
-if(order[i]==q.answer){
+}
 
-btn.classList.add("correct")
+function showAnswer(){
+
+let q=quiz[current]
+
+let correct=order.indexOf(q.answer)
+
+document.getElementById("btn"+correct).classList.add("correct")
+
+}
+
+function selectAnswer(i){
+
+let q=quiz[current]
+
+let real=order[i]
+
+let correct=order.indexOf(q.answer)
+
+for(let j=0;j<4;j++){
+
+document.getElementById("btn"+j).disabled=true
+
+}
+
+if(real===q.answer){
+
+score++
+
+document.getElementById("btn"+i).classList.add("correct")
 
 }else{
 
-btn.classList.add("wrong")
+document.getElementById("btn"+i).classList.add("wrong")
+
+document.getElementById("btn"+correct).classList.add("correct")
 
 }
 
-}
+document.getElementById("score").innerText=
+"答對 "+score+" 題"
 
 }
 
+function nextQuestion(){
+
+current++
+
+if(current>=quiz.length){
+
+alert("完成！答對 "+score+" / "+quiz.length)
+
+startQuiz()
+
+return
+
 }
 
-start()
+render()
+
+}
+
+startQuiz()
 
 </script>
 
