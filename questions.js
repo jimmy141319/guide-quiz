@@ -1,23 +1,37 @@
 const questions = [
 
 {
-subject:"law",
-q:"旅行業服務精神為何？",
-options:["誠信","安全第一","快速服務","娛樂至上"],
+subject:"practice",
+q:"面對抱怨較佳做法為何？",
+options:["先傾聽再處理","直接反駁","忽略客人","推給公司"],
+answer:0
+},
+
+{
+subject:"practice",
+q:"導遊最重要的工作為何？",
+options:["確保旅客安全","增加購物","加快行程","安排娛樂"],
+answer:0
+},
+
+{
+subject:"practice",
+q:"導遊服務原則為何？",
+options:["誠信服務","快速結束","購物優先","娛樂優先"],
 answer:0
 },
 
 {
 subject:"law",
 q:"旅客基本權益為何？",
-options:["安全保障","購物優惠","快速行程","娛樂活動"],
+options:["安全保障","購物優惠","娛樂活動","快速行程"],
 answer:0
 },
 
 {
 subject:"law",
-q:"導遊服務核心為何？",
-options:["顧客滿意","購物導向","娛樂至上","快速完成"],
+q:"旅行業服務精神為何？",
+options:["誠信","購物導向","娛樂至上","速度優先"],
 answer:0
 },
 
@@ -30,29 +44,15 @@ answer:0
 
 {
 subject:"resource",
-q:"日月潭位於哪裡？",
-options:["南投","台中","嘉義","花蓮"],
+q:"太魯閣國家公園位於哪裡？",
+options:["花蓮","宜蘭","台東","高雄"],
 answer:0
 },
 
 {
 subject:"resource",
-q:"太魯閣國家公園位於哪裡？",
-options:["花蓮","宜蘭","屏東","高雄"],
-answer:0
-},
-
-{
-subject:"practice",
-q:"導遊最重要任務為何？",
-options:["旅客安全","購物安排","娛樂活動","交通速度"],
-answer:0
-},
-
-{
-subject:"practice",
-q:"導遊工作重點為何？",
-options:["解說與服務","駕駛","售票","清潔"],
+q:"日月潭位於哪裡？",
+options:["南投","台中","嘉義","花蓮"],
 answer:0
 }
 
