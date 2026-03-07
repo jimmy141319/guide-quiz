@@ -3,212 +3,144 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>學習神器</title>
-
+<title>學習神器 V4</title>
 <style>
-
 body{
-font-family:Arial;
-background:#f5f7fb;
-margin:0;
-text-align:center;
+  font-family:Arial,sans-serif;
+  background:#f5f7fb;
+  margin:0;
+  text-align:center;
 }
-
 header{
-background:#4a90e2;
-color:white;
-padding:20px;
-font-size:26px;
-font-weight:bold;
+  background:#4a90e2;
+  color:#fff;
+  padding:20px;
+  font-size:26px;
+  font-weight:bold;
 }
-
 .container{
-max-width:700px;
-margin:auto;
-padding:20px;
+  max-width:700px;
+  margin:auto;
+  padding:20px;
 }
-
 .card{
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
+  background:#fff;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
-
 button{
-width:100%;
-margin:10px 0;
-padding:15px;
-font-size:18px;
-border:none;
-border-radius:8px;
-background:#4a90e2;
-color:white;
+  width:100%;
+  margin:10px 0;
+  padding:15px;
+  font-size:18px;
+  border:none;
+  border-radius:8px;
+  background:#4a90e2;
+  color:#fff;
 }
-
-.correct{background:#2ecc71!important}
-.wrong{background:#e74c3c!important}
-
+.speak{background:#2ecc71;}
+.correct{background:#2ecc71 !important;}
+.wrong{background:#e74c3c !important;}
 </style>
 </head>
-
 <body>
 
-<header>學習神器</header>
+<header>學習神器 V4</header>
 
 <div class="container">
+  <div class="card" id="menu">
+    <h2>選擇學習內容</h2>
+    <button onclick="startQuiz(guide)">導遊考試</button>
+    <button onclick="startQuiz(jpn5)">日文 N5</button>
+    <button onclick="startQuiz(jpn4)">日文 N4</button>
+    <button onclick="startQuiz(jpn3)">日文 N3</button>
+    <button onclick="startQuiz(jpn2)">日文 N2</button>
+    <button onclick="startQuiz(jpn1)">日文 N1</button>
+    <button onclick="startQuiz(eng)">英文高級會話</button>
+  </div>
 
-<div class="card" id="menu">
-
-<h2>選擇學習內容</h2>
-
-<button onclick="start(guide)">導遊考試</button>
-
-<button onclick="start(jpn5)">日文 N5</button>
-<button onclick="start(jpn4)">日文 N4</button>
-<button onclick="start(jpn3)">日文 N3</button>
-<button onclick="start(jpn2)">日文 N2</button>
-<button onclick="start(jpn1)">日文 N1</button>
-
-<button onclick="start(eng)">英文高級會話</button>
-
+  <div class="card" id="quiz" style="display:none">
+    <h3 id="qnum"></h3>
+    <h2 id="question"></h2>
+    <button class="speak" onclick="speakText()">🔊 發音</button>
+    <div id="answers"></div>
+    <button onclick="nextQuestion()">下一題</button>
+    <button onclick="goHome()">回首頁</button>
+  </div>
 </div>
 
-<div class="card" id="quiz" style="display:none">
-
-<h3 id="qnum"></h3>
-
-<h2 id="question"></h2>
-
-<div id="answers"></div>
-
-<button onclick="next()">下一題</button>
-
-<button onclick="home()">回首頁</button>
-
-</div>
-
-</div>
-
+<script src="questions.js"></script>
 <script>
+let currentList = [];
+let currentIndex = 0;
 
-const guide=[
-["台灣最高峰是？",["玉山","雪山","阿里山","合歡山"],0],
-["日月潭在哪？",["南投","台中","嘉義","花蓮"],0]
-]
-
-const jpn5=[
-["ありがとう 是什麼意思？",["謝謝","你好","再見","對不起"],0],
-["ねこ 是？",["貓","狗","鳥","魚"],0]
-]
-
-const jpn4=[
-["勉強 的意思？",["學習","工作","旅行","運動"],0],
-["会社 是？",["公司","學校","醫院","銀行"],0]
-]
-
-const jpn3=[
-["経験 的意思？",["經驗","環境","計畫","交通"],0],
-["提案 是？",["提議","回答","說明","準備"],0]
-]
-
-const jpn2=[
-["改善 的意思？",["改善","開始","完成","停止"],0],
-["影響 是？",["影響","保護","創造","放棄"],0]
-]
-
-const jpn1=[
-["促進 的意思？",["促進","反對","減少","停止"],0],
-["概念 是？",["概念","形狀","材料","商品"],0]
-]
-
-const eng=[
-["I appreciate your help.",["我很感謝你的幫助","我不需要幫助","請離開","我不喜歡你"],0],
-["Let's schedule a meeting.",["我們安排會議","取消會議","吃飯","回家"],0]
-]
-
-let list=[]
-let i=0
-
-function start(arr){
-
-document.getElementById("menu").style.display="none"
-document.getElementById("quiz").style.display="block"
-
-list=arr
-i=0
-
-show()
-
+function shuffle(arr){
+  return [...arr].sort(() => Math.random() - 0.5);
 }
 
-function show(){
-
-let q=list[i]
-
-document.getElementById("qnum").innerHTML="第 "+(i+1)+" 題"
-
-document.getElementById("question").innerHTML=q[0]
-
-let html=""
-
-for(let j=0;j<q[1].length;j++){
-
-html+=`<button onclick="answer(${j},this)">${q[1][j]}</button>`
-
+function startQuiz(arr){
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("quiz").style.display = "block";
+  currentList = shuffle(arr);
+  currentIndex = 0;
+  renderQuestion();
 }
 
-document.getElementById("answers").innerHTML=html
+function renderQuestion(){
+  const q = currentList[currentIndex];
+  document.getElementById("qnum").innerHTML = "第 " + (currentIndex + 1) + " 題 / " + currentList.length;
+  document.getElementById("question").innerHTML = q[0];
 
+  let html = "";
+  for(let i=0;i<q[1].length;i++){
+    html += `<button onclick="checkAnswer(${i}, this)">${q[1][i]}</button>`;
+  }
+  document.getElementById("answers").innerHTML = html;
 }
 
-function answer(n,btn){
+function checkAnswer(i, btn){
+  const q = currentList[currentIndex];
+  const buttons = document.querySelectorAll("#answers button");
+  buttons.forEach(b => b.disabled = true);
 
-let q=list[i]
-
-let buttons=document.querySelectorAll("#answers button")
-
-buttons.forEach(b=>b.disabled=true)
-
-if(n==q[2]){
-
-btn.classList.add("correct")
-
-}else{
-
-btn.classList.add("wrong")
-
-buttons[q[2]].classList.add("correct")
-
+  if(i === q[2]){
+    btn.classList.add("correct");
+  }else{
+    btn.classList.add("wrong");
+    buttons[q[2]].classList.add("correct");
+  }
 }
 
+function nextQuestion(){
+  currentIndex++;
+  if(currentIndex >= currentList.length){
+    alert("完成練習");
+    goHome();
+    return;
+  }
+  renderQuestion();
 }
 
-function next(){
-
-i++
-
-if(i>=list.length){
-
-alert("完成")
-
-home()
-
-return
-
+function goHome(){
+  location.reload();
 }
 
-show()
+function speakText(){
+  const text = document.getElementById("question").innerText;
+  const msg = new SpeechSynthesisUtterance(text);
 
+  if(/[ぁ-んァ-ン一-龯]/.test(text) && /[ぁ-んァ-ン]/.test(text)){
+    msg.lang = "ja-JP";
+  }else if(/[a-zA-Z]/.test(text)){
+    msg.lang = "en-US";
+  }else{
+    msg.lang = "zh-TW";
+  }
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(msg);
 }
-
-function home(){
-
-location.reload()
-
-}
-
 </script>
-
 </body>
 </html>
