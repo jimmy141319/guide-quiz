@@ -11,6 +11,7 @@
       margin: 0;
       padding: 20px;
     }
+
     .box {
       max-width: 860px;
       margin: 30px auto;
@@ -19,10 +20,12 @@
       border-radius: 16px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     }
+
     h1 {
       text-align: center;
       margin-bottom: 10px;
     }
+
     .toolbar {
       display: flex;
       gap: 10px;
@@ -30,6 +33,7 @@
       justify-content: center;
       margin-bottom: 18px;
     }
+
     select {
       padding: 10px 12px;
       font-size: 16px;
@@ -37,13 +41,7 @@
       border: 1px solid #ccc;
       background: white;
     }
-    .q {
-      font-size: 28px;
-      font-weight: bold;
-      margin: 20px 0;
-      min-height: 48px;
-      line-height: 1.5;
-    }
+
     .meta {
       color: #555;
       margin-bottom: 12px;
@@ -53,10 +51,28 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+
+    .section-badge {
+      text-align: center;
+      font-size: 18px;
+      color: #444;
+      margin-top: 6px;
+      margin-bottom: 10px;
+    }
+
+    .q {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 20px 0;
+      min-height: 48px;
+      line-height: 1.5;
+    }
+
     .answers {
       display: grid;
       gap: 12px;
     }
+
     button {
       padding: 16px;
       font-size: 22px;
@@ -65,39 +81,39 @@
       background: #e5e7eb;
       cursor: pointer;
     }
+
     button:hover {
       background: #d1d5db;
     }
+
     .correct {
       background: #fde047 !important;
       color: #111 !important;
     }
+
     .wrong {
       background: #fca5a5 !important;
       color: #111 !important;
     }
+
     .controls {
       margin-top: 18px;
       text-align: center;
     }
+
     .action {
       background: #2563eb;
       color: white;
       margin: 6px;
     }
+
     .note, .result {
       text-align: center;
       margin-top: 12px;
       min-height: 28px;
       font-size: 20px;
     }
-    .section-badge {
-      text-align: center;
-      font-size: 18px;
-      color: #444;
-      margin-top: 6px;
-      margin-bottom: 6px;
-    }
+
     @media (max-width: 600px) {
       .q { font-size: 24px; }
       button { font-size: 20px; }
@@ -124,8 +140,8 @@
     </div>
 
     <div class="meta">
-      <div id="progress">第 1 題 / 共 10 題</div>
-      <div id="score">答對 0 題</div>
+      <div id="progress"></div>
+      <div id="score"></div>
     </div>
 
     <div class="section-badge" id="sectionLabel"></div>
@@ -177,40 +193,48 @@
       return [...resourcePool, ...lawPool, ...practicePool];
     }
 
+    function showEmptyMessage() {
+      document.getElementById("progress").innerText = "第 0 題 / 共 0 題";
+      document.getElementById("score").innerText = "答對 0 題";
+      document.getElementById("sectionLabel").innerText = "";
+      document.getElementById("question").innerText = "目前這個科目還沒有題目";
+      document.getElementById("result").innerText = "";
+      document.getElementById("note").innerText = "";
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById("btn" + i);
+        btn.innerText = "";
+        btn.disabled = true;
+        btn.classList.remove("correct", "wrong");
+      }
+    }
+
     function startQuiz() {
       const subject = document.getElementById("subject").value;
       const count = document.getElementById("count").value;
 
-      let pool = [...questions];
-
       if (count === "150") {
         quizQuestions = buildOfficialExam();
       } else {
+        let pool = [...questions];
         if (subject !== "all") {
           pool = pool.filter(q => q.subject === subject);
         }
-
         if (pool.length === 0) {
-          document.getElementById("question").innerText = "目前這個科目還沒有題目";
-          document.getElementById("progress").innerText = "第 0 題 / 共 0 題";
-          document.getElementById("score").innerText = "答對 0 題";
-          document.getElementById("result").innerText = "";
-          document.getElementById("note").innerText = "";
-          document.getElementById("sectionLabel").innerText = "";
-          for (let i = 0; i < 4; i++) {
-            const btn = document.getElementById("btn" + i);
-            btn.innerText = "";
-            btn.disabled = true;
-            btn.classList.remove("correct", "wrong");
-          }
+          quizQuestions = [];
+          showEmptyMessage();
           return;
         }
-
         quizQuestions = shuffle(pool).slice(0, Math.min(parseInt(count, 10), pool.length));
+      }
+
+      if (!quizQuestions.length) {
+        showEmptyMessage();
+        return;
       }
 
       current = 0;
       score = 0;
+      locked = false;
       render();
     }
 
@@ -218,10 +242,10 @@
       const q = quizQuestions[current];
       document.getElementById("progress").innerText = `第 ${current + 1} 題 / 共 ${quizQuestions.length} 題`;
       document.getElementById("score").innerText = `答對 ${score} 題`;
+      document.getElementById("sectionLabel").innerText = getSectionName(q.subject);
       document.getElementById("question").innerText = q.q;
       document.getElementById("result").innerText = "";
       document.getElementById("note").innerText = "";
-      document.getElementById("sectionLabel").innerText = getSectionName(q.subject);
 
       for (let i = 0; i < 4; i++) {
         const btn = document.getElementById("btn" + i);
@@ -234,14 +258,14 @@
     }
 
     function showAnswer() {
-      if (locked) return;
+      if (locked || !quizQuestions.length) return;
       const q = quizQuestions[current];
       document.getElementById("btn" + q.answer).classList.add("correct");
       document.getElementById("note").innerText = `正確答案：${q.options[q.answer]}`;
     }
 
     function selectAnswer(i) {
-      if (locked) return;
+      if (locked || !quizQuestions.length) return;
       locked = true;
 
       const q = quizQuestions[current];
@@ -265,7 +289,7 @@
     }
 
     function nextQuestion() {
-      if (quizQuestions.length === 0) return;
+      if (!quizQuestions.length) return;
 
       current++;
       if (current >= quizQuestions.length) {
