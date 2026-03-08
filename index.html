@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>導遊考試刷題 V12</title>
+<title>導遊考試刷題 V13</title>
 <style>
 body{
   font-family:Arial,sans-serif;
@@ -256,6 +256,7 @@ select,.topbtn,.searchInput{
 
 <script src="questions.js"></script>
 <script>
+let allQuestions = [];
 let quizQuestions = [];
 let current = 0;
 let score = 0;
@@ -263,8 +264,8 @@ let locked = false;
 let currentOrder = [0,1,2,3];
 let currentModeSubject = "resource";
 let currentModeCount = "10";
-let wrongBook = JSON.parse(localStorage.getItem("guide_wrong_book_v12") || "[]");
-let favoriteBook = JSON.parse(localStorage.getItem("guide_fav_book_v12") || "[]");
+let wrongBook = JSON.parse(localStorage.getItem("guide_wrong_book_v13") || "[]");
+let favoriteBook = JSON.parse(localStorage.getItem("guide_fav_book_v13") || "[]");
 let answeredState = [];
 let timerInterval = null;
 let timeLeft = 0;
@@ -272,14 +273,32 @@ let timeLeft = 0;
 function fisherYates(array){
   const arr = [...array];
   for(let i=arr.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
   }
   return arr;
 }
 
+function normalizeText(text){
+  return String(text)
+    .trim()
+    .replace(/[「」『』【】（）()？?！!、，,。.\s]/g,"")
+    .toLowerCase();
+}
+
+function dedupeQuestions(list){
+  const map = new Map();
+  for(const q of list){
+    const key = q.subject + "||" + normalizeText(q.q);
+    if(!map.has(key)){
+      map.set(key, q);
+    }
+  }
+  return Array.from(map.values());
+}
+
 function questionKey(q){
-  return q.subject + "||" + q.q;
+  return q.subject + "||" + normalizeText(q.q);
 }
 
 function getSectionName(subject){
@@ -292,11 +311,11 @@ function getSectionName(subject){
 }
 
 function saveWrongBook(){
-  localStorage.setItem("guide_wrong_book_v12", JSON.stringify(wrongBook));
+  localStorage.setItem("guide_wrong_book_v13", JSON.stringify(wrongBook));
 }
 
 function saveFavoriteBook(){
-  localStorage.setItem("guide_fav_book_v12", JSON.stringify(favoriteBook));
+  localStorage.setItem("guide_fav_book_v13", JSON.stringify(favoriteBook));
 }
 
 function addWrongQuestion(q){
@@ -423,13 +442,13 @@ function startQuiz(){
   let pool = [];
 
   if(subject === "wrong"){
-    pool = [...wrongBook];
+    pool = dedupeQuestions([...wrongBook]);
   }else if(subject === "fav"){
-    pool = [...favoriteBook];
+    pool = dedupeQuestions([...favoriteBook]);
   }else if(subject === "all"){
-    pool = [...questions];
+    pool = [...allQuestions];
   }else{
-    pool = questions.filter(q => q.subject === subject);
+    pool = allQuestions.filter(q => q.subject === subject);
   }
 
   pool = filterBySearch(pool);
@@ -554,11 +573,12 @@ function updateJumpGrid(){
 }
 
 function updateStatsBox(){
-  const resourceCount = questions.filter(q=>q.subject==="resource").length;
-  const lawCount = questions.filter(q=>q.subject==="law").length;
-  const practiceCount = questions.filter(q=>q.subject==="practice").length;
+  const resourceCount = allQuestions.filter(q=>q.subject==="resource").length;
+  const lawCount = allQuestions.filter(q=>q.subject==="law").length;
+  const practiceCount = allQuestions.filter(q=>q.subject==="practice").length;
+
   document.getElementById("statsBox").innerHTML = `
-    題庫統計：觀光資源 ${resourceCount} 題 ／ 法規行政 ${lawCount} 題 ／ 導遊實務 ${practiceCount} 題<br>
+    去重後題庫：觀光資源 ${resourceCount} 題 ／ 法規行政 ${lawCount} 題 ／ 導遊實務 ${practiceCount} 題<br>
     收藏題：${favoriteBook.length} 題 ／ 錯題本：${wrongBook.length} 題
   `;
 }
@@ -584,9 +604,9 @@ function showSummary(timeUp){
     答對：${score} 題<br>
     答錯：${wrong} 題<br>
     正確率：${rate}%<br>
-    觀光資源題數：${resourceTotal} 題<br>
-    法規行政題數：${lawTotal} 題<br>
-    導遊實務題數：${practiceTotal} 題<br>
+    本回合觀光資源題數：${resourceTotal} 題<br>
+    本回合法規行政題數：${lawTotal} 題<br>
+    本回合導遊實務題數：${practiceTotal} 題<br>
     收藏題累積：${favoriteBook.length} 題<br>
     錯題本累積：${wrongBook.length} 題
   `;
@@ -602,6 +622,12 @@ function restartCurrentMode(){
   document.getElementById("subject").value = currentModeSubject;
   document.getElementById("count").value = currentModeCount;
   startQuiz();
+}
+
+if(typeof questions !== "undefined" && Array.isArray(questions)){
+  allQuestions = dedupeQuestions(questions);
+}else{
+  allQuestions = [];
 }
 
 startQuiz();
