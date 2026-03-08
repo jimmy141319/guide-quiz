@@ -1,636 +1,428 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>導遊考試刷題 V13</title>
+<title>導遊考試刷題 V15</title>
+
 <style>
 body{
-  font-family:Arial,sans-serif;
-  background:#f3f4f6;
-  margin:0;
-  padding:20px;
+font-family:Arial;
+background:#f3f4f6;
+margin:0;
+padding:20px;
 }
+
 .box{
-  max-width:920px;
-  margin:30px auto;
-  background:#fff;
-  padding:24px;
-  border-radius:16px;
-  box-shadow:0 8px 24px rgba(0,0,0,.08);
+max-width:920px;
+margin:auto;
+background:#fff;
+padding:24px;
+border-radius:16px;
+box-shadow:0 8px 24px rgba(0,0,0,.08);
 }
+
 h1{
-  text-align:center;
-  margin:0 0 16px 0;
+text-align:center;
+margin-bottom:16px;
 }
-.toolbar,.searchRow{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  justify-content:center;
-  margin-bottom:14px;
+
+.toolbar{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:center;
+margin-bottom:14px;
 }
-select,.topbtn,.searchInput{
-  padding:10px 12px;
-  font-size:16px;
-  border-radius:10px;
-  border:1px solid #ccc;
-  background:#fff;
+
+select,button,input{
+padding:10px;
+font-size:16px;
+border-radius:10px;
+border:1px solid #ccc;
 }
-.topbtn{
-  cursor:pointer;
+
+button{
+cursor:pointer;
 }
-.searchInput{
-  min-width:260px;
-}
+
 .timer{
-  text-align:center;
-  font-size:22px;
-  font-weight:bold;
-  color:#dc2626;
-  margin:10px 0 16px 0;
+text-align:center;
+font-size:22px;
+color:#dc2626;
+margin:10px 0;
 }
-.meta{
-  color:#555;
-  margin-bottom:12px;
-  font-size:18px;
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.section-badge{
-  text-align:center;
-  font-size:18px;
-  color:#444;
-  margin-top:6px;
-  margin-bottom:10px;
-}
+
 .q{
-  font-size:28px;
-  font-weight:bold;
-  margin:20px 0 10px 0;
-  min-height:48px;
-  line-height:1.5;
+font-size:26px;
+font-weight:bold;
+margin:20px 0;
 }
-.qtools{
-  text-align:center;
-  margin-bottom:14px;
-}
-.favBtn{
-  padding:10px 16px;
-  font-size:16px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  background:#fff7ed;
-  border:1px solid #fdba74;
-}
+
 .answers{
-  display:grid;
-  gap:12px;
+display:grid;
+gap:12px;
 }
+
 .answer-btn{
-  padding:16px;
-  font-size:22px;
-  border:none;
-  border-radius:12px;
-  background:#e5e7eb;
-  cursor:pointer;
+padding:16px;
+font-size:20px;
+border:none;
+border-radius:12px;
+background:#e5e7eb;
+cursor:pointer;
 }
-.answer-btn:hover{
-  background:#d1d5db;
-}
+
 .correct{
-  background:#fde047 !important;
-  color:#111 !important;
+background:#fde047;
 }
+
 .wrong{
-  background:#fca5a5 !important;
-  color:#111 !important;
+background:#fca5a5;
 }
+
 .controls{
-  text-align:center;
-  margin-top:18px;
+text-align:center;
+margin-top:18px;
 }
-.action{
-  background:#2563eb;
-  color:#fff;
-  margin:6px;
-  padding:14px 18px;
-  font-size:18px;
-  border:none;
-  border-radius:12px;
-  cursor:pointer;
-}
-.secondary{
-  background:#fff;
-  color:#111;
-  border:1px solid #ccc;
-}
-.note,.result{
-  text-align:center;
-  margin-top:12px;
-  min-height:28px;
-  font-size:20px;
-}
-.jumpWrap{
-  margin-top:18px;
-}
-.jumpTitle{
-  text-align:center;
-  font-size:18px;
-  color:#444;
-  margin-bottom:10px;
-}
+
 .jumpGrid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(52px,1fr));
-  gap:8px;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(50px,1fr));
+gap:6px;
+margin-top:12px;
 }
+
 .jumpBtn{
-  padding:10px 6px;
-  border:none;
-  border-radius:10px;
-  background:#e5e7eb;
-  cursor:pointer;
-  font-size:16px;
+padding:8px;
+border:none;
+border-radius:8px;
+background:#e5e7eb;
 }
+
 .jumpBtn.current{
-  background:#2563eb;
-  color:#fff;
+background:#2563eb;
+color:#fff;
 }
-.jumpBtn.done{
-  background:#dcfce7;
+
+.summary{
+margin-top:20px;
+padding:12px;
+border:1px solid #ddd;
+border-radius:10px;
+background:#fafafa;
 }
-.jumpBtn.wrongMark{
-  background:#fee2e2;
-}
-.statsBox,.summary{
-  margin-top:18px;
-  background:#f9fafb;
-  border:1px solid #e5e7eb;
-  border-radius:12px;
-  padding:14px;
-  font-size:18px;
-  line-height:1.8;
-}
-.hidden{
-  display:none;
-}
-@media (max-width:600px){
-  .q{font-size:24px;}
-  .answer-btn{font-size:20px;}
-  .action{font-size:16px;}
-  .timer{font-size:20px;}
-  .searchInput{min-width:180px;width:100%;}
-}
+
 </style>
 </head>
+
 <body>
+
 <div class="box">
-  <h1>導遊考試刷題</h1>
 
-  <div class="toolbar">
-    <select id="subject" onchange="startQuiz()">
-      <option value="resource">第一節：觀光資源</option>
-      <option value="law">第二節：法規行政</option>
-      <option value="practice">第三節：導遊實務</option>
-      <option value="wrong">只練錯題</option>
-      <option value="fav">只練收藏題</option>
-      <option value="all">全部隨機</option>
-    </select>
+<h1>導遊考試刷題 V15</h1>
 
-    <select id="count" onchange="startQuiz()">
-      <option value="10">練習 10 題</option>
-      <option value="50">模擬考 50 題</option>
-    </select>
+<div class="toolbar">
 
-    <button class="topbtn" onclick="clearWrongBook()">清空錯題本</button>
-    <button class="topbtn" onclick="clearFavorites()">清空收藏</button>
-  </div>
+<select id="subject" onchange="startQuiz()">
+<option value="resource">觀光資源</option>
+<option value="law">法規行政</option>
+<option value="practice">導遊實務</option>
+<option value="all">全部隨機</option>
+</select>
 
-  <div class="searchRow">
-    <input id="searchInput" class="searchInput" type="text" placeholder="搜尋題目，例如：日月潭 / 國家公園 / 故宮">
-    <button class="topbtn" onclick="startQuiz()">搜尋</button>
-    <button class="topbtn" onclick="clearSearch()">清除搜尋</button>
-  </div>
+<select id="count" onchange="startQuiz()">
+<option value="10">練習10題</option>
+<option value="50">模擬考50題</option>
+<option value="150">完整模擬考150題</option>
+</select>
 
-  <div class="timer hidden" id="timerBox">剩餘時間：<span id="timerText">60:00</span></div>
+<button onclick="clearWrong()">清空錯題</button>
+<button onclick="clearFav()">清空收藏</button>
 
-  <div class="meta">
-    <div id="progress"></div>
-    <div id="score"></div>
-  </div>
+</div>
 
-  <div class="section-badge" id="sectionLabel"></div>
-  <div class="q" id="question"></div>
+<div class="timer" id="timerBox" style="display:none">
+剩餘時間 <span id="timerText"></span>
+</div>
 
-  <div class="qtools">
-    <button class="favBtn" id="favBtn" onclick="toggleFavorite()">☆ 收藏這題</button>
-  </div>
+<div id="progress"></div>
 
-  <div class="answers">
-    <button class="answer-btn" id="btn0" onclick="selectAnswer(0)"></button>
-    <button class="answer-btn" id="btn1" onclick="selectAnswer(1)"></button>
-    <button class="answer-btn" id="btn2" onclick="selectAnswer(2)"></button>
-    <button class="answer-btn" id="btn3" onclick="selectAnswer(3)"></button>
-  </div>
+<div id="question" class="q"></div>
 
-  <div class="result" id="result"></div>
-  <div class="note" id="note"></div>
+<div style="text-align:center;margin-bottom:10px">
+<button onclick="toggleFav()">⭐ 收藏題目</button>
+</div>
 
-  <div class="controls">
-    <button class="action" onclick="nextQuestion()">下一題</button>
-    <button class="action secondary" onclick="restartCurrentMode()">重新開始</button>
-  </div>
+<div class="answers">
 
-  <div class="jumpWrap">
-    <div class="jumpTitle">題號跳題</div>
-    <div class="jumpGrid" id="jumpGrid"></div>
-  </div>
+<button class="answer-btn" id="btn0" onclick="selectAnswer(0)"></button>
+<button class="answer-btn" id="btn1" onclick="selectAnswer(1)"></button>
+<button class="answer-btn" id="btn2" onclick="selectAnswer(2)"></button>
+<button class="answer-btn" id="btn3" onclick="selectAnswer(3)"></button>
 
-  <div class="statsBox" id="statsBox"></div>
-  <div class="summary hidden" id="summary"></div>
+</div>
+
+<div class="controls">
+
+<button onclick="nextQuestion()">下一題</button>
+<button onclick="startQuiz()">重新開始</button>
+
+</div>
+
+<div class="jumpGrid" id="jumpGrid"></div>
+
+<div class="summary" id="summary"></div>
+
 </div>
 
 <script src="questions.js"></script>
+
 <script>
-let allQuestions = [];
-let quizQuestions = [];
-let current = 0;
-let score = 0;
-let locked = false;
-let currentOrder = [0,1,2,3];
-let currentModeSubject = "resource";
-let currentModeCount = "10";
-let wrongBook = JSON.parse(localStorage.getItem("guide_wrong_book_v13") || "[]");
-let favoriteBook = JSON.parse(localStorage.getItem("guide_fav_book_v13") || "[]");
-let answeredState = [];
-let timerInterval = null;
-let timeLeft = 0;
 
-function fisherYates(array){
-  const arr = [...array];
-  for(let i=arr.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
-  }
-  return arr;
+let allQuestions=questions
+let quiz=[]
+let current=0
+let score=0
+let order=[0,1,2,3]
+
+let wrongBook=JSON.parse(localStorage.getItem("wrongBook")||"[]")
+let favBook=JSON.parse(localStorage.getItem("favBook")||"[]")
+
+let timer
+let timeLeft=0
+
+function shuffle(a){
+
+let arr=[...a]
+
+for(let i=arr.length-1;i>0;i--){
+
+let j=Math.floor(Math.random()*(i+1))
+
+;[arr[i],arr[j]]=[arr[j],arr[i]]
+
 }
 
-function normalizeText(text){
-  return String(text)
-    .trim()
-    .replace(/[「」『』【】（）()？?！!、，,。.\s]/g,"")
-    .toLowerCase();
-}
+return arr
 
-function dedupeQuestions(list){
-  const map = new Map();
-  for(const q of list){
-    const key = q.subject + "||" + normalizeText(q.q);
-    if(!map.has(key)){
-      map.set(key, q);
-    }
-  }
-  return Array.from(map.values());
-}
-
-function questionKey(q){
-  return q.subject + "||" + normalizeText(q.q);
-}
-
-function getSectionName(subject){
-  if(subject==="resource") return "第一節：觀光資源";
-  if(subject==="law") return "第二節：法規行政";
-  if(subject==="practice") return "第三節：導遊實務";
-  if(subject==="wrong") return "錯題本模式";
-  if(subject==="fav") return "收藏題模式";
-  return "全部隨機";
-}
-
-function saveWrongBook(){
-  localStorage.setItem("guide_wrong_book_v13", JSON.stringify(wrongBook));
-}
-
-function saveFavoriteBook(){
-  localStorage.setItem("guide_fav_book_v13", JSON.stringify(favoriteBook));
-}
-
-function addWrongQuestion(q){
-  const key = questionKey(q);
-  if(!wrongBook.some(item => questionKey(item) === key)){
-    wrongBook.push(q);
-    saveWrongBook();
-  }
-}
-
-function isFavorite(q){
-  const key = questionKey(q);
-  return favoriteBook.some(item => questionKey(item) === key);
-}
-
-function toggleFavorite(){
-  if(!quizQuestions.length) return;
-  const q = quizQuestions[current];
-  const key = questionKey(q);
-  const idx = favoriteBook.findIndex(item => questionKey(item) === key);
-  if(idx >= 0){
-    favoriteBook.splice(idx,1);
-  }else{
-    favoriteBook.push(q);
-  }
-  saveFavoriteBook();
-  updateFavoriteButton();
-  updateStatsBox();
-}
-
-function updateFavoriteButton(){
-  if(!quizQuestions.length) return;
-  const btn = document.getElementById("favBtn");
-  btn.innerText = isFavorite(quizQuestions[current]) ? "★ 已收藏" : "☆ 收藏這題";
-}
-
-function clearWrongBook(){
-  wrongBook = [];
-  saveWrongBook();
-  alert("錯題本已清空");
-  if(document.getElementById("subject").value === "wrong") startQuiz();
-  updateStatsBox();
-}
-
-function clearFavorites(){
-  favoriteBook = [];
-  saveFavoriteBook();
-  alert("收藏題已清空");
-  if(document.getElementById("subject").value === "fav") startQuiz();
-  updateFavoriteButton();
-  updateStatsBox();
-}
-
-function clearSearch(){
-  document.getElementById("searchInput").value = "";
-  startQuiz();
-}
-
-function showEmptyMessage(msg){
-  stopTimer();
-  document.getElementById("timerBox").classList.add("hidden");
-  document.getElementById("progress").innerText = "第 0 題 / 共 0 題";
-  document.getElementById("score").innerText = "答對 0 題";
-  document.getElementById("sectionLabel").innerText = "";
-  document.getElementById("question").innerText = msg || "目前這個模式沒有題目";
-  document.getElementById("result").innerText = "";
-  document.getElementById("note").innerText = "";
-  document.getElementById("summary").classList.add("hidden");
-  document.getElementById("jumpGrid").innerHTML = "";
-  for(let i=0;i<4;i++){
-    const btn = document.getElementById("btn"+i);
-    btn.innerText = "";
-    btn.disabled = true;
-    btn.classList.remove("correct","wrong");
-  }
-  updateStatsBox();
-}
-
-function pickUnique(pool,count){
-  return fisherYates(pool).slice(0, Math.min(count, pool.length));
-}
-
-function filterBySearch(pool){
-  const keyword = document.getElementById("searchInput").value.trim();
-  if(!keyword) return pool;
-  return pool.filter(q => (q.q + " " + q.options.join(" ")).includes(keyword));
-}
-
-function startTimer(seconds){
-  stopTimer();
-  timeLeft = seconds;
-  document.getElementById("timerBox").classList.remove("hidden");
-  updateTimerText();
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    updateTimerText();
-    if(timeLeft <= 0){
-      stopTimer();
-      alert("時間到，自動交卷");
-      showSummary(true);
-    }
-  }, 1000);
-}
-
-function stopTimer(){
-  if(timerInterval){
-    clearInterval(timerInterval);
-    timerInterval = null;
-  }
-}
-
-function updateTimerText(){
-  const m = Math.floor(timeLeft / 60).toString().padStart(2,"0");
-  const s = Math.floor(timeLeft % 60).toString().padStart(2,"0");
-  document.getElementById("timerText").innerText = `${m}:${s}`;
 }
 
 function startQuiz(){
-  const subject = document.getElementById("subject").value;
-  const count = document.getElementById("count").value;
-  currentModeSubject = subject;
-  currentModeCount = count;
 
-  let pool = [];
+let subject=document.getElementById("subject").value
 
-  if(subject === "wrong"){
-    pool = dedupeQuestions([...wrongBook]);
-  }else if(subject === "fav"){
-    pool = dedupeQuestions([...favoriteBook]);
-  }else if(subject === "all"){
-    pool = [...allQuestions];
-  }else{
-    pool = allQuestions.filter(q => q.subject === subject);
-  }
+let count=parseInt(document.getElementById("count").value)
 
-  pool = filterBySearch(pool);
+let pool
 
-  if(pool.length === 0){
-    let msg = "目前這個模式沒有題目";
-    if(subject === "wrong") msg = "錯題本目前沒有題目";
-    if(subject === "fav") msg = "收藏題目前沒有題目";
-    if(document.getElementById("searchInput").value.trim()) msg = "搜尋不到符合的題目";
-    showEmptyMessage(msg);
-    return;
-  }
+if(subject=="all"){
+pool=[...allQuestions]
+}else{
+pool=allQuestions.filter(q=>q.subject==subject)
+}
 
-  quizQuestions = pickUnique(pool, parseInt(count,10));
-  current = 0;
-  score = 0;
-  locked = false;
-  answeredState = new Array(quizQuestions.length).fill(null);
-  document.getElementById("summary").classList.add("hidden");
+quiz=shuffle(pool).slice(0,count)
 
-  if(count === "50" && subject !== "wrong" && subject !== "fav"){
-    startTimer(60 * 60);
-  }else{
-    stopTimer();
-    document.getElementById("timerBox").classList.add("hidden");
-  }
+current=0
+score=0
 
-  render();
-  updateJumpGrid();
-  updateStatsBox();
+if(count==50||count==150){
+
+let minutes=count==50?60:180
+
+timeLeft=minutes*60
+
+document.getElementById("timerBox").style.display="block"
+
+timer=setInterval(()=>{
+
+timeLeft--
+
+let m=Math.floor(timeLeft/60)
+
+let s=timeLeft%60
+
+document.getElementById("timerText").innerText=m+":"+String(s).padStart(2,"0")
+
+if(timeLeft<=0){
+
+clearInterval(timer)
+
+finishQuiz()
+
+}
+
+},1000)
+
+}else{
+
+document.getElementById("timerBox").style.display="none"
+
+clearInterval(timer)
+
+}
+
+render()
+
 }
 
 function render(){
-  const q = quizQuestions[current];
-  document.getElementById("progress").innerText = `第 ${current+1} 題 / 共 ${quizQuestions.length} 題`;
-  document.getElementById("score").innerText = `答對 ${score} 題`;
-  document.getElementById("sectionLabel").innerText = getSectionName(q.subject);
-  document.getElementById("question").innerText = q.q;
-  document.getElementById("result").innerText = "";
-  document.getElementById("note").innerText = "";
-  document.getElementById("summary").classList.add("hidden");
 
-  currentOrder = fisherYates([0,1,2,3]);
+let q=quiz[current]
 
-  for(let i=0;i<4;i++){
-    const btn = document.getElementById("btn"+i);
-    btn.innerText = q.options[currentOrder[i]];
-    btn.disabled = false;
-    btn.classList.remove("correct","wrong");
-  }
+document.getElementById("progress").innerText="第 "+(current+1)+" / "+quiz.length+" 題"
 
-  locked = false;
-  updateFavoriteButton();
-  updateJumpGrid();
-  updateStatsBox();
+document.getElementById("question").innerText=q.q
+
+order=shuffle([0,1,2,3])
+
+for(let i=0;i<4;i++){
+
+let btn=document.getElementById("btn"+i)
+
+btn.innerText=q.options[order[i]]
+
+btn.className="answer-btn"
+
+btn.disabled=false
+
+}
+
+buildJump()
+
 }
 
 function selectAnswer(i){
-  if(locked || !quizQuestions.length) return;
-  locked = true;
 
-  const q = quizQuestions[current];
-  const actualAnswerIndex = currentOrder[i];
-  const correctButtonIndex = currentOrder.indexOf(q.answer);
+let q=quiz[current]
 
-  for(let j=0;j<4;j++){
-    document.getElementById("btn"+j).disabled = true;
-  }
+let real=order[i]
 
-  if(actualAnswerIndex === q.answer){
-    document.getElementById("btn"+i).classList.add("correct");
-    document.getElementById("result").innerText = "✅ 正確";
-    score++;
-    answeredState[current] = "correct";
-  }else{
-    document.getElementById("btn"+i).classList.add("wrong");
-    document.getElementById("btn"+correctButtonIndex).classList.add("correct");
-    document.getElementById("result").innerText = "❌ 錯誤";
-    addWrongQuestion(q);
-    answeredState[current] = "wrong";
-  }
+let correctIndex=order.indexOf(q.answer)
 
-  document.getElementById("score").innerText = `答對 ${score} 題`;
-  document.getElementById("note").innerText = `正確答案：${q.options[q.answer]}`;
-  updateJumpGrid();
-  updateStatsBox();
+for(let j=0;j<4;j++){
+
+document.getElementById("btn"+j).disabled=true
+
+}
+
+if(real==q.answer){
+
+document.getElementById("btn"+i).classList.add("correct")
+
+score++
+
+}else{
+
+document.getElementById("btn"+i).classList.add("wrong")
+
+document.getElementById("btn"+correctIndex).classList.add("correct")
+
+wrongBook.push(q)
+
+localStorage.setItem("wrongBook",JSON.stringify(wrongBook))
+
+}
+
+}
+
+function toggleFav(){
+
+let q=quiz[current]
+
+favBook.push(q)
+
+localStorage.setItem("favBook",JSON.stringify(favBook))
+
+alert("已收藏")
+
 }
 
 function nextQuestion(){
-  if(!quizQuestions.length) return;
-  if(!locked){
-    alert("請先作答");
-    return;
-  }
-  current++;
-  if(current >= quizQuestions.length){
-    showSummary(false);
-    return;
-  }
-  render();
+
+current++
+
+if(current>=quiz.length){
+
+finishQuiz()
+
+return
+
 }
 
-function jumpTo(index){
-  if(index < 0 || index >= quizQuestions.length) return;
-  current = index;
-  render();
+render()
+
 }
 
-function updateJumpGrid(){
-  const wrap = document.getElementById("jumpGrid");
-  wrap.innerHTML = "";
-  for(let i=0;i<quizQuestions.length;i++){
-    const btn = document.createElement("button");
-    btn.className = "jumpBtn";
-    btn.innerText = i + 1;
-    if(i === current) btn.classList.add("current");
-    if(answeredState[i] === "correct") btn.classList.add("done");
-    if(answeredState[i] === "wrong") btn.classList.add("wrongMark");
-    btn.onclick = () => jumpTo(i);
-    wrap.appendChild(btn);
-  }
+function buildJump(){
+
+let grid=document.getElementById("jumpGrid")
+
+grid.innerHTML=""
+
+for(let i=0;i<quiz.length;i++){
+
+let b=document.createElement("button")
+
+b.innerText=i+1
+
+b.className="jumpBtn"
+
+if(i==current)b.classList.add("current")
+
+b.onclick=()=>{current=i;render()}
+
+grid.appendChild(b)
+
 }
 
-function updateStatsBox(){
-  const resourceCount = allQuestions.filter(q=>q.subject==="resource").length;
-  const lawCount = allQuestions.filter(q=>q.subject==="law").length;
-  const practiceCount = allQuestions.filter(q=>q.subject==="practice").length;
-
-  document.getElementById("statsBox").innerHTML = `
-    去重後題庫：觀光資源 ${resourceCount} 題 ／ 法規行政 ${lawCount} 題 ／ 導遊實務 ${practiceCount} 題<br>
-    收藏題：${favoriteBook.length} 題 ／ 錯題本：${wrongBook.length} 題
-  `;
 }
 
-function showSummary(timeUp){
-  stopTimer();
-  const total = quizQuestions.length;
-  const wrong = total - score;
-  const rate = Math.round((score / total) * 100);
-  const summary = document.getElementById("summary");
+function finishQuiz(){
 
-  let resourceTotal = 0, lawTotal = 0, practiceTotal = 0;
-  quizQuestions.forEach(q => {
-    if(q.subject === "resource") resourceTotal++;
-    if(q.subject === "law") lawTotal++;
-    if(q.subject === "practice") practiceTotal++;
-  });
+clearInterval(timer)
 
-  summary.innerHTML = `
-    <strong>${timeUp ? "時間到，已自動交卷" : "測驗完成"}</strong><br>
-    模式：${getSectionName(currentModeSubject)}<br>
-    總題數：${total} 題<br>
-    答對：${score} 題<br>
-    答錯：${wrong} 題<br>
-    正確率：${rate}%<br>
-    本回合觀光資源題數：${resourceTotal} 題<br>
-    本回合法規行政題數：${lawTotal} 題<br>
-    本回合導遊實務題數：${practiceTotal} 題<br>
-    收藏題累積：${favoriteBook.length} 題<br>
-    錯題本累積：${wrongBook.length} 題
-  `;
-  summary.classList.remove("hidden");
-  document.getElementById("result").innerText = "本回合已完成";
-  document.getElementById("note").innerText = "";
-  for(let i=0;i<4;i++){
-    document.getElementById("btn"+i).disabled = true;
-  }
+let total=quiz.length
+
+let wrong=total-score
+
+let rate=Math.round(score/total*100)
+
+document.getElementById("summary").innerHTML=
+
+"完成測驗<br>"+
+"總題 "+total+"<br>"+
+"答對 "+score+"<br>"+
+"答錯 "+wrong+"<br>"+
+"正確率 "+rate+"%"
+
 }
 
-function restartCurrentMode(){
-  document.getElementById("subject").value = currentModeSubject;
-  document.getElementById("count").value = currentModeCount;
-  startQuiz();
+function clearWrong(){
+
+wrongBook=[]
+
+localStorage.setItem("wrongBook","[]")
+
+alert("錯題已清空")
+
 }
 
-if(typeof questions !== "undefined" && Array.isArray(questions)){
-  allQuestions = dedupeQuestions(questions);
-}else{
-  allQuestions = [];
+function clearFav(){
+
+favBook=[]
+
+localStorage.setItem("favBook","[]")
+
+alert("收藏已清空")
+
 }
 
-startQuiz();
+startQuiz()
+
 </script>
+
 </body>
 </html>
