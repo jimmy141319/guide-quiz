@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>導遊考試刷題 V7</title>
+<title>導遊考試刷題 V8</title>
 <style>
 body{
   font-family:Arial,sans-serif;
@@ -30,7 +30,7 @@ h1{
   justify-content:center;
   margin-bottom:18px;
 }
-select, .topbtn{
+select,.topbtn{
   padding:10px 12px;
   font-size:16px;
   border-radius:10px;
@@ -55,6 +55,13 @@ select, .topbtn{
   color:#444;
   margin-top:6px;
   margin-bottom:10px;
+}
+.timer{
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+  color:#dc2626;
+  margin:10px 0 16px 0;
 }
 .q{
   font-size:28px;
@@ -118,7 +125,7 @@ select, .topbtn{
   border-radius:12px;
   padding:14px;
   font-size:18px;
-  line-height:1.8;
+  line-height:1.9;
 }
 .hidden{
   display:none;
@@ -127,6 +134,7 @@ select, .topbtn{
   .q{font-size:24px;}
   .answer-btn{font-size:20px;}
   .action{font-size:16px;}
+  .timer{font-size:20px;}
 }
 </style>
 </head>
@@ -152,6 +160,8 @@ select, .topbtn{
     <button class="topbtn" onclick="clearWrongBook()">清空錯題本</button>
   </div>
 
+  <div class="timer hidden" id="timerBox">剩餘時間：<span id="timerText">--:--:--</span></div>
+
   <div class="meta">
     <div id="progress"></div>
     <div id="score"></div>
@@ -171,7 +181,7 @@ select, .topbtn{
   <div class="note" id="note"></div>
 
   <div class="controls">
-    <button class="action" id="nextBtn" onclick="nextQuestion()">下一題</button>
+    <button class="action" onclick="nextQuestion()">下一題</button>
     <button class="action secondary" onclick="restartCurrentMode()">重新開始</button>
   </div>
 
@@ -187,7 +197,9 @@ let locked = false;
 let currentOrder = [0,1,2,3];
 let currentModeSubject = "all";
 let currentModeCount = "10";
-let wrongBook = JSON.parse(localStorage.getItem("guide_wrong_book_v7") || "[]");
+let wrongBook = JSON.parse(localStorage.getItem("guide_wrong_book_v8") || "[]");
+let timerInterval = null;
+let timeLeft = 0;
 
 function fisherYates(array){
   const arr = [...array];
@@ -207,7 +219,7 @@ function getSectionName(subject){
 }
 
 function saveWrongBook(){
-  localStorage.setItem("guide_wrong_book_v7", JSON.stringify(wrongBook));
+  localStorage.setItem("guide_wrong_book_v8", JSON.stringify(wrongBook));
 }
 
 function questionKey(q){
@@ -233,6 +245,8 @@ function clearWrongBook(){
 }
 
 function showEmptyMessage(msg){
+  stopTimer();
+  document.getElementById("timerBox").classList.add("hidden");
   document.getElementById("progress").innerText = "第 0 題 / 共 0 題";
   document.getElementById("score").innerText = "答對 0 題";
   document.getElementById("sectionLabel").innerText = "";
@@ -257,6 +271,37 @@ function buildOfficialExam(){
   const lawPool = pickUnique(questions.filter(q=>q.subject==="law"),50);
   const practicePool = pickUnique(questions.filter(q=>q.subject==="practice"),50);
   return [...resourcePool, ...lawPool, ...practicePool];
+}
+
+function startTimer(seconds){
+  stopTimer();
+  timeLeft = seconds;
+  document.getElementById("timerBox").classList.remove("hidden");
+  updateTimerText();
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerText();
+    if(timeLeft <= 0){
+      stopTimer();
+      alert("時間到，自動交卷");
+      showSummary(true);
+    }
+  }, 1000);
+}
+
+function stopTimer(){
+  if(timerInterval){
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+function updateTimerText(){
+  const h = Math.floor(timeLeft / 3600).toString().padStart(2, "0");
+  const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, "0");
+  const s = Math.floor(timeLeft % 60).toString().padStart(2, "0");
+  document.getElementById("timerText").innerText = `${h}:${m}:${s}`;
 }
 
 function startQuiz(){
@@ -289,6 +334,14 @@ function startQuiz(){
   score = 0;
   locked = false;
   document.getElementById("summary").classList.add("hidden");
+
+  if(count === "150"){
+    startTimer(2 * 60 * 60); // 2 小時
+  }else{
+    stopTimer();
+    document.getElementById("timerBox").classList.add("hidden");
+  }
+
   render();
 }
 
@@ -328,12 +381,12 @@ function selectAnswer(i){
 
   if(actualAnswerIndex === q.answer){
     document.getElementById("btn"+i).classList.add("correct");
-    document.getElementById("result").innerText = "✔ 答對了";
+    document.getElementById("result").innerText = "✅ 正確";
     score++;
   }else{
     document.getElementById("btn"+i).classList.add("wrong");
     document.getElementById("btn"+correctButtonIndex).classList.add("correct");
-    document.getElementById("result").innerText = "✘ 答錯了";
+    document.getElementById("result").innerText = "❌ 錯誤";
     addWrongQuestion(q);
   }
 
@@ -352,31 +405,60 @@ function nextQuestion(){
   current++;
 
   if(current >= quizQuestions.length){
-    showSummary();
+    showSummary(false);
     return;
   }
 
   render();
 }
 
-function showSummary(){
+function showSummary(timeUp){
+  stopTimer();
+
   const total = quizQuestions.length;
   const wrong = total - score;
   const rate = Math.round((score / total) * 100);
-  const summary = document.getElementById("summary");
 
+  let resourceTotal = 0, lawTotal = 0, practiceTotal = 0;
+  let resourceCorrect = 0, lawCorrect = 0, practiceCorrect = 0;
+
+  for(let i=0;i<quizQuestions.length;i++){
+    const q = quizQuestions[i];
+    if(q.subject === "resource") resourceTotal++;
+    if(q.subject === "law") lawTotal++;
+    if(q.subject === "practice") practiceTotal++;
+  }
+
+  // 這裡以總分比例估算當回合科目成績顯示方式簡化
+  // 若是正式考試150題，可固定每科50題
+  if(currentModeCount === "150"){
+    const answeredCount = current + 1 > total ? total : current + 1;
+    const totalCorrect = score;
+    // 仍顯示每科總數；詳細每科對錯不追蹤逐題作答結果，保持程式簡潔
+    resourceCorrect = "-";
+    lawCorrect = "-";
+    practiceCorrect = "-";
+  }
+
+  const summary = document.getElementById("summary");
   summary.innerHTML = `
-    <strong>測驗完成</strong><br>
+    <strong>${timeUp ? "時間到，已自動交卷" : "測驗完成"}</strong><br>
     總題數：${total} 題<br>
     答對：${score} 題<br>
     答錯：${wrong} 題<br>
     正確率：${rate}%<br>
+    觀光資源題數：${resourceTotal} 題<br>
+    法規行政題數：${lawTotal} 題<br>
+    導遊實務題數：${practiceTotal} 題<br>
     錯題本累積：${wrongBook.length} 題
   `;
-
   summary.classList.remove("hidden");
   document.getElementById("result").innerText = "本回合已完成";
   document.getElementById("note").innerText = "";
+
+  for(let i=0;i<4;i++){
+    document.getElementById("btn"+i).disabled = true;
+  }
 }
 
 function restartCurrentMode(){
