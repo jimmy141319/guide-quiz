@@ -1,0 +1,428 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>導遊考試刷題 V15</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f3f4f6;
+margin:0;
+padding:20px;
+}
+
+.box{
+max-width:920px;
+margin:auto;
+background:#fff;
+padding:24px;
+border-radius:16px;
+box-shadow:0 8px 24px rgba(0,0,0,.08);
+}
+
+h1{
+text-align:center;
+margin-bottom:16px;
+}
+
+.toolbar{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:center;
+margin-bottom:14px;
+}
+
+select,button,input{
+padding:10px;
+font-size:16px;
+border-radius:10px;
+border:1px solid #ccc;
+}
+
+button{
+cursor:pointer;
+}
+
+.timer{
+text-align:center;
+font-size:22px;
+color:#dc2626;
+margin:10px 0;
+}
+
+.q{
+font-size:26px;
+font-weight:bold;
+margin:20px 0;
+}
+
+.answers{
+display:grid;
+gap:12px;
+}
+
+.answer-btn{
+padding:16px;
+font-size:20px;
+border:none;
+border-radius:12px;
+background:#e5e7eb;
+cursor:pointer;
+}
+
+.correct{
+background:#fde047;
+}
+
+.wrong{
+background:#fca5a5;
+}
+
+.controls{
+text-align:center;
+margin-top:18px;
+}
+
+.jumpGrid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(50px,1fr));
+gap:6px;
+margin-top:12px;
+}
+
+.jumpBtn{
+padding:8px;
+border:none;
+border-radius:8px;
+background:#e5e7eb;
+}
+
+.jumpBtn.current{
+background:#2563eb;
+color:#fff;
+}
+
+.summary{
+margin-top:20px;
+padding:12px;
+border:1px solid #ddd;
+border-radius:10px;
+background:#fafafa;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>導遊考試刷題 V15</h1>
+
+<div class="toolbar">
+
+<select id="subject" onchange="startQuiz()">
+<option value="resource">觀光資源</option>
+<option value="law">法規行政</option>
+<option value="practice">導遊實務</option>
+<option value="all">全部隨機</option>
+</select>
+
+<select id="count" onchange="startQuiz()">
+<option value="10">練習10題</option>
+<option value="50">模擬考50題</option>
+<option value="150">完整模擬考150題</option>
+</select>
+
+<button onclick="clearWrong()">清空錯題</button>
+<button onclick="clearFav()">清空收藏</button>
+
+</div>
+
+<div class="timer" id="timerBox" style="display:none">
+剩餘時間 <span id="timerText"></span>
+</div>
+
+<div id="progress"></div>
+
+<div id="question" class="q"></div>
+
+<div style="text-align:center;margin-bottom:10px">
+<button onclick="toggleFav()">⭐ 收藏題目</button>
+</div>
+
+<div class="answers">
+
+<button class="answer-btn" id="btn0" onclick="selectAnswer(0)"></button>
+<button class="answer-btn" id="btn1" onclick="selectAnswer(1)"></button>
+<button class="answer-btn" id="btn2" onclick="selectAnswer(2)"></button>
+<button class="answer-btn" id="btn3" onclick="selectAnswer(3)"></button>
+
+</div>
+
+<div class="controls">
+
+<button onclick="nextQuestion()">下一題</button>
+<button onclick="startQuiz()">重新開始</button>
+
+</div>
+
+<div class="jumpGrid" id="jumpGrid"></div>
+
+<div class="summary" id="summary"></div>
+
+</div>
+
+<script src="questions.js"></script>
+
+<script>
+
+let allQuestions=questions
+let quiz=[]
+let current=0
+let score=0
+let order=[0,1,2,3]
+
+let wrongBook=JSON.parse(localStorage.getItem("wrongBook")||"[]")
+let favBook=JSON.parse(localStorage.getItem("favBook")||"[]")
+
+let timer
+let timeLeft=0
+
+function shuffle(a){
+
+let arr=[...a]
+
+for(let i=arr.length-1;i>0;i--){
+
+let j=Math.floor(Math.random()*(i+1))
+
+;[arr[i],arr[j]]=[arr[j],arr[i]]
+
+}
+
+return arr
+
+}
+
+function startQuiz(){
+
+let subject=document.getElementById("subject").value
+
+let count=parseInt(document.getElementById("count").value)
+
+let pool
+
+if(subject=="all"){
+pool=[...allQuestions]
+}else{
+pool=allQuestions.filter(q=>q.subject==subject)
+}
+
+quiz=shuffle(pool).slice(0,count)
+
+current=0
+score=0
+
+if(count==50||count==150){
+
+let minutes=count==50?60:180
+
+timeLeft=minutes*60
+
+document.getElementById("timerBox").style.display="block"
+
+timer=setInterval(()=>{
+
+timeLeft--
+
+let m=Math.floor(timeLeft/60)
+
+let s=timeLeft%60
+
+document.getElementById("timerText").innerText=m+":"+String(s).padStart(2,"0")
+
+if(timeLeft<=0){
+
+clearInterval(timer)
+
+finishQuiz()
+
+}
+
+},1000)
+
+}else{
+
+document.getElementById("timerBox").style.display="none"
+
+clearInterval(timer)
+
+}
+
+render()
+
+}
+
+function render(){
+
+let q=quiz[current]
+
+document.getElementById("progress").innerText="第 "+(current+1)+" / "+quiz.length+" 題"
+
+document.getElementById("question").innerText=q.q
+
+order=shuffle([0,1,2,3])
+
+for(let i=0;i<4;i++){
+
+let btn=document.getElementById("btn"+i)
+
+btn.innerText=q.options[order[i]]
+
+btn.className="answer-btn"
+
+btn.disabled=false
+
+}
+
+buildJump()
+
+}
+
+function selectAnswer(i){
+
+let q=quiz[current]
+
+let real=order[i]
+
+let correctIndex=order.indexOf(q.answer)
+
+for(let j=0;j<4;j++){
+
+document.getElementById("btn"+j).disabled=true
+
+}
+
+if(real==q.answer){
+
+document.getElementById("btn"+i).classList.add("correct")
+
+score++
+
+}else{
+
+document.getElementById("btn"+i).classList.add("wrong")
+
+document.getElementById("btn"+correctIndex).classList.add("correct")
+
+wrongBook.push(q)
+
+localStorage.setItem("wrongBook",JSON.stringify(wrongBook))
+
+}
+
+}
+
+function toggleFav(){
+
+let q=quiz[current]
+
+favBook.push(q)
+
+localStorage.setItem("favBook",JSON.stringify(favBook))
+
+alert("已收藏")
+
+}
+
+function nextQuestion(){
+
+current++
+
+if(current>=quiz.length){
+
+finishQuiz()
+
+return
+
+}
+
+render()
+
+}
+
+function buildJump(){
+
+let grid=document.getElementById("jumpGrid")
+
+grid.innerHTML=""
+
+for(let i=0;i<quiz.length;i++){
+
+let b=document.createElement("button")
+
+b.innerText=i+1
+
+b.className="jumpBtn"
+
+if(i==current)b.classList.add("current")
+
+b.onclick=()=>{current=i;render()}
+
+grid.appendChild(b)
+
+}
+
+}
+
+function finishQuiz(){
+
+clearInterval(timer)
+
+let total=quiz.length
+
+let wrong=total-score
+
+let rate=Math.round(score/total*100)
+
+document.getElementById("summary").innerHTML=
+
+"完成測驗<br>"+
+"總題 "+total+"<br>"+
+"答對 "+score+"<br>"+
+"答錯 "+wrong+"<br>"+
+"正確率 "+rate+"%"
+
+}
+
+function clearWrong(){
+
+wrongBook=[]
+
+localStorage.setItem("wrongBook","[]")
+
+alert("錯題已清空")
+
+}
+
+function clearFav(){
+
+favBook=[]
+
+localStorage.setItem("favBook","[]")
+
+alert("收藏已清空")
+
+}
+
+startQuiz()
+
+</script>
+
+</body>
+</html>
