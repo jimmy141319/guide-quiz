@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>導遊考試刷題</title>
+<title>導遊考試刷題 V3</title>
 <style>
 body{
   font-family:Arial,sans-serif;
@@ -12,7 +12,7 @@ body{
   padding:20px;
 }
 .box{
-  max-width:860px;
+  max-width:900px;
   margin:30px auto;
   background:#fff;
   padding:24px;
@@ -21,7 +21,7 @@ body{
 }
 h1{
   text-align:center;
-  margin-bottom:10px;
+  margin:0 0 16px 0;
 }
 .toolbar{
   display:flex;
@@ -30,12 +30,15 @@ h1{
   justify-content:center;
   margin-bottom:18px;
 }
-select{
+select,button.topbtn{
   padding:10px 12px;
   font-size:16px;
   border-radius:10px;
   border:1px solid #ccc;
   background:#fff;
+}
+button.topbtn{
+  cursor:pointer;
 }
 .meta{
   color:#555;
@@ -64,7 +67,7 @@ select{
   display:grid;
   gap:12px;
 }
-button{
+.answer-btn{
   padding:16px;
   font-size:22px;
   border:none;
@@ -72,7 +75,7 @@ button{
   background:#e5e7eb;
   cursor:pointer;
 }
-button:hover{
+.answer-btn:hover{
   background:#d1d5db;
 }
 .correct{
@@ -91,6 +94,11 @@ button:hover{
   background:#2563eb;
   color:#fff;
   margin:6px;
+  padding:14px 18px;
+  font-size:18px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
 }
 .note,.result{
   text-align:center;
@@ -98,9 +106,22 @@ button:hover{
   min-height:28px;
   font-size:20px;
 }
+.summary{
+  margin-top:18px;
+  background:#f9fafb;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:14px;
+  font-size:18px;
+  line-height:1.8;
+}
+.hidden{
+  display:none;
+}
 @media (max-width:600px){
   .q{font-size:24px;}
-  button{font-size:20px;}
+  .answer-btn{font-size:20px;}
+  .action{font-size:16px;}
 }
 </style>
 </head>
@@ -114,6 +135,7 @@ button:hover{
       <option value="resource">第一節：觀光資源</option>
       <option value="law">第二節：法規行政</option>
       <option value="practice">第三節：導遊實務</option>
+      <option value="wrong">只練錯題</option>
     </select>
 
     <select id="count" onchange="startQuiz()">
@@ -121,6 +143,8 @@ button:hover{
       <option value="50">模擬 50 題</option>
       <option value="150">正式考試 150 題</option>
     </select>
+
+    <button class="topbtn" onclick="clearWrongBook()">清空錯題本</button>
   </div>
 
   <div class="meta">
@@ -132,19 +156,21 @@ button:hover{
   <div class="q" id="question"></div>
 
   <div class="answers">
-    <button id="btn0" onclick="selectAnswer(0)"></button>
-    <button id="btn1" onclick="selectAnswer(1)"></button>
-    <button id="btn2" onclick="selectAnswer(2)"></button>
-    <button id="btn3" onclick="selectAnswer(3)"></button>
+    <button class="answer-btn" id="btn0" onclick="selectAnswer(0)"></button>
+    <button class="answer-btn" id="btn1" onclick="selectAnswer(1)"></button>
+    <button class="answer-btn" id="btn2" onclick="selectAnswer(2)"></button>
+    <button class="answer-btn" id="btn3" onclick="selectAnswer(3)"></button>
   </div>
 
   <div class="result" id="result"></div>
   <div class="note" id="note"></div>
 
   <div class="controls">
-    <button class="action" onclick="showAnswer()">顯示答案</button>
-    <button class="action" onclick="nextQuestion()">下一題</button>
+    <button class="action" id="nextBtn" onclick="nextQuestion()">下一題</button>
+    <button class="action" onclick="restartCurrentMode()">重新開始</button>
   </div>
+
+  <div class="summary hidden" id="summary"></div>
 </div>
 
 <script src="questions.js"></script>
@@ -154,12 +180,15 @@ let current = 0;
 let score = 0;
 let locked = false;
 let currentOrder = [0,1,2,3];
+let wrongBook = JSON.parse(localStorage.getItem("guide_wrong_book") || "[]");
+let currentModeSubject = "all";
+let currentModeCount = "10";
 
 function fisherYates(array){
   const arr = [...array];
   for(let i=arr.length-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
+    [arr[i],arr[j]] = [arr[j],arr[i]];
   }
   return arr;
 }
@@ -168,26 +197,50 @@ function getSectionName(subject){
   if(subject==="resource") return "第一節：觀光資源";
   if(subject==="law") return "第二節：法規行政";
   if(subject==="practice") return "第三節：導遊實務";
+  if(subject==="wrong") return "錯題本模式";
   return "全部隨機";
 }
 
-function showEmptyMessage(){
-  document.getElementById("progress").innerText="第 0 題 / 共 0 題";
-  document.getElementById("score").innerText="答對 0 題";
-  document.getElementById("sectionLabel").innerText="";
-  document.getElementById("question").innerText="目前這個科目還沒有題目";
-  document.getElementById("result").innerText="";
-  document.getElementById("note").innerText="";
+function saveWrongBook(){
+  localStorage.setItem("guide_wrong_book", JSON.stringify(wrongBook));
+}
+
+function addWrongQuestion(q){
+  const key = q.subject + "||" + q.q;
+  const exists = wrongBook.some(item => item.subject + "||" + item.q === key);
+  if(!exists){
+    wrongBook.push(q);
+    saveWrongBook();
+  }
+}
+
+function clearWrongBook(){
+  wrongBook = [];
+  saveWrongBook();
+  alert("錯題本已清空");
+  if(document.getElementById("subject").value === "wrong"){
+    startQuiz();
+  }
+}
+
+function showEmptyMessage(msg){
+  document.getElementById("progress").innerText = "第 0 題 / 共 0 題";
+  document.getElementById("score").innerText = "答對 0 題";
+  document.getElementById("sectionLabel").innerText = "";
+  document.getElementById("question").innerText = msg || "目前這個模式沒有題目";
+  document.getElementById("result").innerText = "";
+  document.getElementById("note").innerText = "";
+  document.getElementById("summary").classList.add("hidden");
   for(let i=0;i<4;i++){
-    const btn=document.getElementById("btn"+i);
-    btn.innerText="";
-    btn.disabled=true;
+    const btn = document.getElementById("btn"+i);
+    btn.innerText = "";
+    btn.disabled = true;
     btn.classList.remove("correct","wrong");
   }
 }
 
 function pickUnique(pool,count){
-  return fisherYates(pool).slice(0,Math.min(count,pool.length));
+  return fisherYates(pool).slice(0, Math.min(count, pool.length));
 }
 
 function buildOfficialExam(){
@@ -198,105 +251,128 @@ function buildOfficialExam(){
 }
 
 function startQuiz(){
-  const subject=document.getElementById("subject").value;
-  const count=document.getElementById("count").value;
+  const subject = document.getElementById("subject").value;
+  const count = document.getElementById("count").value;
+  currentModeSubject = subject;
+  currentModeCount = count;
 
-  if(count==="150"){
-    quizQuestions = buildOfficialExam();
+  let pool = [];
+
+  if(subject === "wrong"){
+    pool = [...wrongBook];
+  }else if(count === "150"){
+    pool = buildOfficialExam();
   }else{
-    let pool=[...questions];
-    if(subject!=="all"){
-      pool=pool.filter(q=>q.subject===subject);
+    pool = [...questions];
+    if(subject !== "all"){
+      pool = pool.filter(q=>q.subject===subject);
     }
-    if(pool.length===0){
-      quizQuestions=[];
-      showEmptyMessage();
-      return;
-    }
-    quizQuestions=pickUnique(pool,parseInt(count,10));
   }
 
-  if(!quizQuestions.length){
-    showEmptyMessage();
+  if(pool.length === 0){
+    showEmptyMessage(subject==="wrong" ? "錯題本目前沒有題目" : "目前這個科目還沒有題目");
     return;
   }
 
-  current=0;
-  score=0;
-  locked=false;
+  if(subject === "wrong"){
+    quizQuestions = pickUnique(pool, parseInt(count,10));
+  }else if(count === "150"){
+    quizQuestions = pool;
+  }else{
+    quizQuestions = pickUnique(pool, parseInt(count,10));
+  }
+
+  current = 0;
+  score = 0;
+  locked = false;
+  document.getElementById("summary").classList.add("hidden");
   render();
 }
 
 function render(){
-  const q=quizQuestions[current];
+  const q = quizQuestions[current];
 
-  document.getElementById("progress").innerText=`第 ${current+1} 題 / 共 ${quizQuestions.length} 題`;
-  document.getElementById("score").innerText=`答對 ${score} 題`;
-  document.getElementById("sectionLabel").innerText=getSectionName(q.subject);
-  document.getElementById("question").innerText=q.q;
-  document.getElementById("result").innerText="";
-  document.getElementById("note").innerText="";
+  document.getElementById("progress").innerText = `第 ${current+1} 題 / 共 ${quizQuestions.length} 題`;
+  document.getElementById("score").innerText = `答對 ${score} 題`;
+  document.getElementById("sectionLabel").innerText = getSectionName(currentModeSubject==="all" || currentModeSubject==="wrong" ? q.subject : q.subject);
+  document.getElementById("question").innerText = q.q;
+  document.getElementById("result").innerText = "";
+  document.getElementById("note").innerText = "";
+  document.getElementById("summary").classList.add("hidden");
 
-  currentOrder=fisherYates([0,1,2,3]);
+  currentOrder = fisherYates([0,1,2,3]);
 
   for(let i=0;i<4;i++){
-    const btn=document.getElementById("btn"+i);
-    btn.innerText=q.options[currentOrder[i]];
+    const btn = document.getElementById("btn"+i);
+    btn.innerText = q.options[currentOrder[i]];
     btn.classList.remove("correct","wrong");
-    btn.disabled=false;
+    btn.disabled = false;
   }
 
-  locked=false;
-}
-
-function showAnswer(){
-  if(locked || !quizQuestions.length) return;
-  const q=quizQuestions[current];
-  const correctButtonIndex=currentOrder.indexOf(q.answer);
-  document.getElementById("btn"+correctButtonIndex).classList.add("correct");
-  document.getElementById("note").innerText=`正確答案：${q.options[q.answer]}`;
+  locked = false;
 }
 
 function selectAnswer(i){
   if(locked || !quizQuestions.length) return;
-  locked=true;
+  locked = true;
 
-  const q=quizQuestions[current];
-  const actualAnswerIndex=currentOrder[i];
-  const correctButtonIndex=currentOrder.indexOf(q.answer);
+  const q = quizQuestions[current];
+  const actualAnswerIndex = currentOrder[i];
+  const correctButtonIndex = currentOrder.indexOf(q.answer);
 
   for(let j=0;j<4;j++){
-    document.getElementById("btn"+j).disabled=true;
+    document.getElementById("btn"+j).disabled = true;
   }
 
-  if(actualAnswerIndex===q.answer){
+  if(actualAnswerIndex === q.answer){
     document.getElementById("btn"+i).classList.add("correct");
-    document.getElementById("result").innerText="✔ 答對了";
+    document.getElementById("result").innerText = "✅ 正確";
     score++;
-    document.getElementById("score").innerText=`答對 ${score} 題`;
   }else{
     document.getElementById("btn"+i).classList.add("wrong");
     document.getElementById("btn"+correctButtonIndex).classList.add("correct");
-    document.getElementById("result").innerText="✘ 答錯了";
+    document.getElementById("result").innerText = "❌ 錯誤";
+    addWrongQuestion(q);
   }
 
-  document.getElementById("note").innerText=`正確答案：${q.options[q.answer]}`;
+  document.getElementById("score").innerText = `答對 ${score} 題`;
+  document.getElementById("note").innerText = `正確答案：${q.options[q.answer]}`;
 }
 
 function nextQuestion(){
   if(!quizQuestions.length) return;
-
   current++;
 
-  if(current>=quizQuestions.length){
-    const total=quizQuestions.length;
-    const rate=Math.round((score/total)*100);
-    alert(`測驗完成\n答對 ${score} / ${total} 題\n正確率 ${rate}%`);
-    startQuiz();
+  if(current >= quizQuestions.length){
+    showSummary();
     return;
   }
 
   render();
+}
+
+function showSummary(){
+  const total = quizQuestions.length;
+  const wrong = total - score;
+  const rate = Math.round((score / total) * 100);
+  const summary = document.getElementById("summary");
+  summary.innerHTML = `
+    <strong>測驗完成</strong><br>
+    總題數：${total} 題<br>
+    答對：${score} 題<br>
+    答錯：${wrong} 題<br>
+    正確率：${rate}%<br>
+    錯題本目前累積：${wrongBook.length} 題
+  `;
+  summary.classList.remove("hidden");
+  document.getElementById("result").innerText = "本回合已完成";
+  document.getElementById("note").innerText = "";
+}
+
+function restartCurrentMode(){
+  document.getElementById("subject").value = currentModeSubject;
+  document.getElementById("count").value = currentModeCount;
+  startQuiz();
 }
 
 startQuiz();
