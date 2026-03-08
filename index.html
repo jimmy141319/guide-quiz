@@ -4,116 +4,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>導遊考試刷題 V15</title>
-
+<title>導遊考試刷題 V17</title>
 <style>
-body{
-font-family:Arial;
-background:#f3f4f6;
-margin:0;
-padding:20px;
-}
-
-.box{
-max-width:920px;
-margin:auto;
-background:#fff;
-padding:24px;
-border-radius:16px;
-box-shadow:0 8px 24px rgba(0,0,0,.08);
-}
-
-h1{
-text-align:center;
-margin-bottom:16px;
-}
-
-.toolbar{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-justify-content:center;
-margin-bottom:14px;
-}
-
-select,button,input{
-padding:10px;
-font-size:16px;
-border-radius:10px;
-border:1px solid #ccc;
-}
-
-button{
-cursor:pointer;
-}
-
-.timer{
-text-align:center;
-font-size:22px;
-color:#dc2626;
-margin:10px 0;
-}
-
-.q{
-font-size:26px;
-font-weight:bold;
-margin:20px 0;
-}
-
-.answers{
-display:grid;
-gap:12px;
-}
-
-.answer-btn{
-padding:16px;
-font-size:20px;
-border:none;
-border-radius:12px;
-background:#e5e7eb;
-cursor:pointer;
-}
-
-.correct{
-background:#fde047;
-}
-
-.wrong{
-background:#fca5a5;
-}
-
-.controls{
-text-align:center;
-margin-top:18px;
-}
-
-.jumpGrid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(50px,1fr));
-gap:6px;
-margin-top:12px;
-}
-
-.jumpBtn{
-padding:8px;
-border:none;
-border-radius:8px;
-background:#e5e7eb;
-}
-
-.jumpBtn.current{
-background:#2563eb;
-color:#fff;
-}
-
-.summary{
-margin-top:20px;
-padding:12px;
-border:1px solid #ddd;
-border-radius:10px;
-background:#fafafa;
-}
-
+body{font-family:Arial;background:#f3f4f6;margin:0;padding:20px}
+.box{max-width:920px;margin:auto;background:#fff;padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+h1{text-align:center;margin-bottom:16px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+select,button,input{padding:10px;font-size:16px;border-radius:10px;border:1px solid #ccc}
+button{cursor:pointer}
+.timer{text-align:center;font-size:22px;color:#dc2626;margin:10px 0}
+.q{font-size:26px;font-weight:bold;margin:20px 0}
+.answers{display:grid;gap:12px}
+.answer-btn{padding:16px;font-size:20px;border:none;border-radius:12px;background:#e5e7eb;cursor:pointer}
+.correct{background:#fde047}
+.wrong{background:#fca5a5}
+.controls{text-align:center;margin-top:18px}
+.jumpGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(50px,1fr));gap:6px;margin-top:12px}
+.jumpBtn{padding:8px;border:none;border-radius:8px;background:#e5e7eb}
+.jumpBtn.current{background:#2563eb;color:#fff}
+.summary{margin-top:20px;padding:12px;border:1px solid #ddd;border-radius:10px;background:#fafafa}
 </style>
 </head>
 
@@ -121,7 +30,7 @@ background:#fafafa;
 
 <div class="box">
 
-<h1>導遊考試刷題 V15</h1>
+<h1>導遊考試刷題 V17</h1>
 
 <div class="toolbar">
 
@@ -187,8 +96,8 @@ let current=0
 let score=0
 let order=[0,1,2,3]
 
-let wrongBook=JSON.parse(localStorage.getItem("wrongBook")||"[]")
-let favBook=JSON.parse(localStorage.getItem("favBook")||"[]")
+let wrongBook=JSON.parse(localStorage.getItem("wrongBookV17")||"[]")
+let favBook=JSON.parse(localStorage.getItem("favBookV17")||"[]")
 
 let timer
 let timeLeft=0
@@ -322,7 +231,7 @@ document.getElementById("btn"+correctIndex).classList.add("correct")
 
 wrongBook.push(q)
 
-localStorage.setItem("wrongBook",JSON.stringify(wrongBook))
+localStorage.setItem("wrongBookV17",JSON.stringify(wrongBook))
 
 }
 
@@ -334,7 +243,7 @@ let q=quiz[current]
 
 favBook.push(q)
 
-localStorage.setItem("favBook",JSON.stringify(favBook))
+localStorage.setItem("favBookV17",JSON.stringify(favBook))
 
 alert("已收藏")
 
@@ -391,7 +300,6 @@ let wrong=total-score
 let rate=Math.round(score/total*100)
 
 document.getElementById("summary").innerHTML=
-
 "完成測驗<br>"+
 "總題 "+total+"<br>"+
 "答對 "+score+"<br>"+
@@ -404,7 +312,7 @@ function clearWrong(){
 
 wrongBook=[]
 
-localStorage.setItem("wrongBook","[]")
+localStorage.setItem("wrongBookV17","[]")
 
 alert("錯題已清空")
 
@@ -414,7 +322,7 @@ function clearFav(){
 
 favBook=[]
 
-localStorage.setItem("favBook","[]")
+localStorage.setItem("favBookV17","[]")
 
 alert("收藏已清空")
 
