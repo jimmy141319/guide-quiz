@@ -1,59 +1,141 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>導遊考試刷題 V18</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>導遊考試刷題 V19</title>
+
 <style>
-body{font-family:Arial;background:#f3f4f6;padding:20px}
-.box{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:12px}
-.q{font-size:26px;font-weight:bold;margin:20px 0}
-.answer{padding:14px;margin:6px 0;background:#e5e7eb;border-radius:10px;cursor:pointer}
-.correct{background:#fde047}
-.wrong{background:#fca5a5}
+body{
+font-family:Arial;
+background:#f3f4f6;
+margin:0;
+padding:20px;
+}
+
+.box{
+max-width:800px;
+margin:auto;
+background:white;
+padding:24px;
+border-radius:16px;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+h1{
+text-align:center;
+}
+
+.question{
+font-size:26px;
+font-weight:bold;
+margin:20px 0;
+}
+
+.btn{
+width:100%;
+padding:16px;
+margin:8px 0;
+font-size:20px;
+border:none;
+border-radius:12px;
+background:#e5e7eb;
+}
+
+.btn:hover{
+background:#d1d5db;
+}
+
+.next{
+margin-top:20px;
+background:#2563eb;
+color:white;
+}
 </style>
 </head>
+
 <body>
+
 <div class="box">
-<h1>導遊考試刷題 V18</h1>
+
+<h1>導遊考試刷題 V19</h1>
+
 <div id="progress"></div>
-<div id="q" class="q"></div>
-<div id="answers"></div>
-<button onclick="next()">下一題</button>
+
+<div class="question" id="question"></div>
+
+<button class="btn" onclick="answer(0)" id="a0"></button>
+<button class="btn" onclick="answer(1)" id="a1"></button>
+<button class="btn" onclick="answer(2)" id="a2"></button>
+<button class="btn" onclick="answer(3)" id="a3"></button>
+
+<button class="btn next" onclick="next()">下一題</button>
+
 </div>
 
 <script src="questions.js"></script>
+
 <script>
-let quiz=[...questions].sort(()=>Math.random()-0.5)
-let i=0
 
-function show(){
-let q=quiz[i]
-document.getElementById("progress").innerText="第 "+(i+1)+" 題"
-document.getElementById("q").innerText=q.q
+let current=0
+let score=0
 
-let a=document.getElementById("answers")
-a.innerHTML=""
-q.options.forEach((opt,idx)=>{
-let b=document.createElement("div")
-b.className="answer"
-b.innerText=opt
-b.onclick=()=>{
-if(idx===q.answer){b.classList.add("correct")}
-else{b.classList.add("wrong")}
+function render(){
+
+let q=questions[current]
+
+document.getElementById("progress").innerText=
+"第 "+(current+1)+" 題"
+
+document.getElementById("question").innerText=
+q.q || q.question
+
+document.getElementById("a0").innerText=q.options[0]
+document.getElementById("a1").innerText=q.options[1]
+document.getElementById("a2").innerText=q.options[2]
+document.getElementById("a3").innerText=q.options[3]
+
 }
-a.appendChild(b)
-})
+
+function answer(i){
+
+let q=questions[current]
+
+if(i==q.answer){
+
+alert("正確")
+
+score++
+
+}else{
+
+alert("錯誤\n正確答案："+q.options[q.answer])
+
+}
+
 }
 
 function next(){
-i++
-if(i>=quiz.length)i=0
-show()
+
+current++
+
+if(current>=questions.length){
+
+alert("完成\n得分："+score)
+
+current=0
+
+score=0
+
 }
 
-show()
+render()
+
+}
+
+render()
+
 </script>
+
 </body>
 </html>
